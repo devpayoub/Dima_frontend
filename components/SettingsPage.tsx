@@ -1,0 +1,631 @@
+import React, { useEffect, useState } from "react";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Alert } from "./ui/alert";
+import { Label } from "./ui/label";
+import { useAuth } from "./AuthProvider";
+import { buildStaffPortalUrl } from "../lib/links";
+import { useNavigate } from "react-router-dom";
+import { useSubscriptionContext } from "./SubscriptionContext";
+
+const DELETE_CONFIRMATION = "DELETE";
+
+export const SettingsPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { staffAccounts, createStaff, updateStaffPin, setStaffAccess, deleteStaff, currentOwner, currentUser, deleteAccount, updateProfileInfo, updatePassword } = useAuth();
+  useSubscriptionContext();
+
+  const [profileForm, setProfileForm] = useState({
+    businessName: currentUser?.businessName ?? "",
+    email: currentUser?.email ?? "",
+    slug: currentOwner?.slug ?? "",
+  });
+  const [profileSuccess, setProfileSuccess] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [profileBusy, setProfileBusy] = useState(false);
+
+  useEffect(() => {
+    setProfileForm({
+      businessName: currentUser?.businessName ?? "",
+      email: currentUser?.email ?? "",
+      slug: currentOwner?.slug ?? "",
+    });
+  }, [currentUser, currentOwner]);
+
+  const [passwordForm, setPasswordForm] = useState({ next: "", confirm: "" });
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordBusy, setPasswordBusy] = useState(false);
+
+  const [form, setForm] = useState({ name: "", email: "", pin: "" });
+  const [error, setError] = useState("");
+  const [staffBusy, setStaffBusy] = useState(false);
+  const [staffActionBusyId, setStaffActionBusyId] = useState<string | null>(null);
+  const [staffActionError, setStaffActionError] = useState("");
+  const [resetTarget, setResetTarget] = useState<{ id: string; name: string } | null>(null);
+  const [resetPin, setResetPin] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetBusy, setResetBusy] = useState(false);
+  const [deleteStaffTarget, setDeleteStaffTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteStaffError, setDeleteStaffError] = useState("");
+  const [deleteStaffBusy, setDeleteStaffBusy] = useState(false);
+  const [isDeleteStepOneOpen, setIsDeleteStepOneOpen] = useState(false);
+  const [isDeleteStepTwoOpen, setIsDeleteStepTwoOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteAccountBusy, setDeleteAccountBusy] = useState(false);
+
+  const handleProfileSave = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setProfileError("");
+    setProfileSuccess("");
+    setProfileBusy(true);
+    const result = await updateProfileInfo({
+      businessName: profileForm.businessName,
+      email: profileForm.email,
+    });
+    setProfileBusy(false);
+    if (!result.ok) {
+      setProfileError(result.error);
+    } else {
+      setProfileSuccess("Profile updated successfully.");
+      setTimeout(() => setProfileSuccess(""), 3000);
+    }
+  };
+
+  const handlePasswordSave = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+    setPasswordBusy(true);
+    const result = await updatePassword(passwordForm.next);
+    setPasswordBusy(false);
+    if (!result.ok) {
+      setPasswordError(result.error);
+    } else {
+      setPasswordSuccess("Password changed successfully.");
+      setPasswordForm({ next: "", confirm: "" });
+      setTimeout(() => setPasswordSuccess(""), 3000);
+    }
+  };
+
+  const handleCreate = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    setStaffActionError("");
+    setStaffBusy(true);
+    const result = await createStaff(form);
+    setStaffBusy(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setForm({ name: "", email: "", pin: "" });
+  };
+
+  const handleReset = async () => {
+    if (!resetTarget) return;
+    setResetError("");
+    setResetBusy(true);
+    const result = await updateStaffPin(resetTarget.id, resetPin);
+    setResetBusy(false);
+    if (!result.ok) {
+      setResetError(result.error);
+      return;
+    }
+    setResetPin("");
+    setResetTarget(null);
+  };
+
+  const handleSetStaffAccess = async (staffId: string, access: "active" | "disabled") => {
+    setStaffActionError("");
+    setStaffActionBusyId(staffId);
+    const result = await setStaffAccess(staffId, access);
+    setStaffActionBusyId(null);
+    if (!result.ok) {
+      setStaffActionError(result.error);
+    }
+  };
+
+  const handleDeleteFinal = async () => {
+    setDeleteError("");
+    if (deleteConfirmText.trim().toUpperCase() !== DELETE_CONFIRMATION) {
+      setDeleteError(`Type ${DELETE_CONFIRMATION} to confirm account deletion.`);
+      return;
+    }
+
+    setDeleteAccountBusy(true);
+    const result = await deleteAccount();
+    setDeleteAccountBusy(false);
+    if (!result.ok) {
+      setDeleteError(result.error);
+      return;
+    }
+
+    setIsDeleteStepTwoOpen(false);
+    setDeleteConfirmText("");
+    navigate("/signup");
+  };
+
+  const handleDeleteStaff = async () => {
+    if (!deleteStaffTarget) return;
+    setDeleteStaffError("");
+    setDeleteStaffBusy(true);
+    const result = await deleteStaff(deleteStaffTarget.id);
+    setDeleteStaffBusy(false);
+    if (!result.ok) {
+      setDeleteStaffError(result.error);
+      return;
+    }
+    setDeleteStaffTarget(null);
+  };
+
+  return (
+    <div className="p-4 md:p-8 space-y-6 md:space-y-8 animate-fade-in h-full overflow-y-auto flex flex-col bg-gray-50/50">
+      <div className="space-y-1">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Settings</h1>
+        <p className="text-sm text-muted-foreground">Manage your profile, password, team, and account.</p>
+      </div>
+
+      {/* Edit Profile */}
+      <section className="rounded-2xl md:rounded-3xl border bg-white p-4 md:p-6 shadow-sm space-y-5">
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold">Edit Profile</h2>
+          <p className="text-sm text-muted-foreground">Update your business name and email address.</p>
+        </div>
+        <form className="space-y-4" onSubmit={handleProfileSave}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Business / Display Name</Label>
+              <Input
+                value={profileForm.businessName}
+                onChange={(e) => setProfileForm({ ...profileForm, businessName: e.target.value })}
+                placeholder="Your Business"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Email Address</Label>
+              <Input
+                value={profileForm.email}
+                onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                type="email"
+                placeholder="you@brand.com"
+                required
+              />
+            </div>
+            {currentUser?.role === "owner" && (
+              <div className="space-y-1.5">
+                <Label>Public URL Slug</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground shrink-0">stampee.co/</span>
+                  <Input
+                    value={profileForm.slug}
+                    readOnly
+                    className="bg-muted/40 text-muted-foreground cursor-not-allowed"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">Your public URL cannot be changed after signup.</p>
+              </div>
+            )}
+          </div>
+          {profileError && <Alert variant="error">{profileError}</Alert>}
+          {profileSuccess && <Alert variant="success">{profileSuccess}</Alert>}
+          <div>
+            <Button type="submit" className="rounded-full px-6" disabled={profileBusy}>
+              {profileBusy ? "Saving..." : "Save Profile"}
+            </Button>
+          </div>
+        </form>
+      </section>
+
+      {/* Change Password */}
+      <section className="rounded-2xl md:rounded-3xl border bg-white p-4 md:p-6 shadow-sm space-y-5">
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold">Change Password</h2>
+          <p className="text-sm text-muted-foreground">Update your account password. Must be at least 6 characters.</p>
+        </div>
+        <form className="space-y-4" onSubmit={handlePasswordSave}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>New Password</Label>
+              <Input
+                type="password"
+                value={passwordForm.next}
+                onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Confirm New Password</Label>
+              <Input
+                type="password"
+                value={passwordForm.confirm}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+          {passwordError && <Alert variant="error">{passwordError}</Alert>}
+          {passwordSuccess && <Alert variant="success">{passwordSuccess}</Alert>}
+          <div>
+            <Button type="submit" className="rounded-full px-6" disabled={passwordBusy}>
+              {passwordBusy ? "Changing..." : "Change Password"}
+            </Button>
+          </div>
+        </form>
+      </section>
+
+      <section className="rounded-2xl md:rounded-3xl border bg-white p-4 md:p-6 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-lg md:text-xl font-semibold">Staff Accounts</h2>
+            <p className="text-sm text-muted-foreground">
+              Create staff logins for issuing cards and managing stamps.
+            </p>
+          </div>
+          {currentOwner?.slug && currentOwner?.id && (
+            <div className="text-xs text-muted-foreground space-y-2 md:text-right">
+              <div>
+                Org ID: <span className="font-mono break-all">{currentOwner.id}</span>
+              </div>
+              <div className="text-[11px] text-muted-foreground/80">
+                Share this Org ID or portal link with staff.
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  readOnly
+                  value={buildStaffPortalUrl(currentOwner.slug, currentOwner.id)}
+                  className="text-[11px] font-mono bg-muted/40 min-w-0"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => navigator.clipboard.writeText(buildStaffPortalUrl(currentOwner.slug!, currentOwner.id))}
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <form className="space-y-3" onSubmit={handleCreate}>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label>Name</Label>
+              <Input
+                value={form.name}
+                onChange={(event) => setForm({ ...form, name: event.target.value })}
+                placeholder="Jamie Staff"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Email</Label>
+              <Input
+                value={form.email}
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                placeholder="staff@brand.com"
+                type="email"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>PIN</Label>
+              <Input
+                value={form.pin}
+                onChange={(event) => setForm({ ...form, pin: event.target.value })}
+                placeholder="4-6 digits"
+                maxLength={6}
+                required
+              />
+            </div>
+          </div>
+          <Button type="submit" className="rounded-full h-10 px-6 w-full sm:w-auto" disabled={staffBusy}>
+            {staffBusy ? "Adding..." : "Add Staff"}
+          </Button>
+        </form>
+
+        {error && <Alert variant="error">{error}</Alert>}
+
+        {staffActionError && <Alert variant="error">{staffActionError}</Alert>}
+
+        {/* Staff table — desktop */}
+        <div className="hidden md:block rounded-2xl border border-slate-100 overflow-hidden">
+          <div className="grid grid-cols-[1.2fr_1.4fr_0.8fr_auto] gap-4 px-4 py-3 text-xs uppercase tracking-wider text-muted-foreground bg-slate-50">
+            <span>Name</span>
+            <span>Email</span>
+            <span>Status</span>
+            <span className="text-right">Actions</span>
+          </div>
+          {staffAccounts.length === 0 ? (
+            <div className="px-4 py-6 text-sm text-muted-foreground">
+              No staff yet. Add your first teammate above.
+            </div>
+          ) : (
+            staffAccounts.map((staff) => (
+              <div
+                key={staff.id}
+                className="grid grid-cols-[1.2fr_1.4fr_0.8fr_auto] gap-4 px-4 py-4 border-t items-center"
+              >
+                <div className="font-medium text-foreground truncate">{staff.businessName}</div>
+                <div className="text-sm text-muted-foreground truncate">{staff.email}</div>
+                <div>
+                  <Badge
+                    variant={staff.access === "active" ? "secondary" : "destructive"}
+                    className="uppercase tracking-wider"
+                  >
+                    {staff.access}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() => {
+                      setResetTarget({ id: staff.id, name: staff.businessName });
+                      setResetPin("");
+                      setResetError("");
+                    }}
+                  >
+                    Reset PIN
+                  </Button>
+                  <Button
+                    variant={staff.access === "active" ? "destructive" : "default"}
+                    size="sm"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() =>
+                      handleSetStaffAccess(staff.id, staff.access === "active" ? "disabled" : "active")
+                    }
+                  >
+                    {staffActionBusyId === staff.id ? "Saving..." : (staff.access === "active" ? "Disable" : "Enable")}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() => {
+                      setDeleteStaffTarget({ id: staff.id, name: staff.businessName });
+                      setDeleteStaffError("");
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Staff list — mobile cards */}
+        <div className="md:hidden space-y-3">
+          {staffAccounts.length === 0 ? (
+            <div className="rounded-2xl border border-slate-100 px-4 py-6 text-sm text-muted-foreground">
+              No staff yet. Add your first teammate above.
+            </div>
+          ) : (
+            staffAccounts.map((staff) => (
+              <div
+                key={staff.id}
+                className="rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-4 space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-medium text-foreground truncate">{staff.businessName}</div>
+                    <div className="text-sm text-muted-foreground truncate">{staff.email}</div>
+                  </div>
+                  <Badge
+                    variant={staff.access === "active" ? "secondary" : "destructive"}
+                    className="uppercase tracking-wider shrink-0"
+                  >
+                    {staff.access}
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() => {
+                      setResetTarget({ id: staff.id, name: staff.businessName });
+                      setResetPin("");
+                      setResetError("");
+                    }}
+                  >
+                    Reset PIN
+                  </Button>
+                  <Button
+                    variant={staff.access === "active" ? "destructive" : "default"}
+                    size="sm"
+                    className="flex-1"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() =>
+                      handleSetStaffAccess(staff.id, staff.access === "active" ? "disabled" : "active")
+                    }
+                  >
+                    {staffActionBusyId === staff.id ? "Saving..." : (staff.access === "active" ? "Disable" : "Enable")}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex-1"
+                    disabled={staffActionBusyId === staff.id}
+                    onClick={() => {
+                      setDeleteStaffTarget({ id: staff.id, name: staff.businessName });
+                      setDeleteStaffError("");
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-2xl md:rounded-3xl border border-rose-200 bg-rose-50 p-4 md:p-6 shadow-sm space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg md:text-xl font-semibold text-rose-900">Danger Zone</h2>
+          <p className="text-sm text-rose-800/90">
+            Delete your owner account, all staff logins, and all campaign/customer data for this business.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-rose-200 bg-white/70 px-4 py-3 text-xs text-rose-800">
+          This action is permanent and cannot be undone.
+        </div>
+        <div>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => {
+              setDeleteError("");
+              setDeleteConfirmText("");
+              setIsDeleteStepOneOpen(true);
+            }}
+          >
+            Delete Account
+          </Button>
+        </div>
+      </section>
+
+      <Dialog open={!!resetTarget} onOpenChange={(open) => !open && !resetBusy && setResetTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset PIN for {resetTarget?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Label>New PIN</Label>
+            <Input
+              value={resetPin}
+              onChange={(event) => setResetPin(event.target.value)}
+              placeholder="4-6 digits"
+              maxLength={6}
+            />
+            {resetError && (
+              <div className="text-sm text-rose-600">{resetError}</div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetTarget(null)} disabled={resetBusy}>
+              Cancel
+            </Button>
+            <Button onClick={handleReset} disabled={resetBusy}>
+              {resetBusy ? "Updating..." : "Update PIN"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteStaffTarget} onOpenChange={(open) => !open && setDeleteStaffTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete staff account?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              This will permanently remove <span className="font-semibold text-foreground">{deleteStaffTarget?.name}</span> and revoke their login access.
+            </p>
+            {deleteStaffError && (
+              <div className="text-sm text-rose-600">{deleteStaffError}</div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteStaffTarget(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteStaff} disabled={deleteStaffBusy}>
+              {deleteStaffBusy ? "Deleting..." : "Delete Staff"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteStepOneOpen} onOpenChange={(open) => !deleteAccountBusy && setIsDeleteStepOneOpen(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Account: Step 1 of 2</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              You are about to delete <span className="font-semibold text-foreground">{currentOwner?.businessName}</span>.
+            </p>
+            <p>This will remove owner access, all staff accounts, campaigns, and customer history.</p>
+            <p className="text-rose-600 font-medium">This action cannot be undone.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteStepOneOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setIsDeleteStepOneOpen(false);
+                setDeleteError("");
+                setDeleteConfirmText("");
+                setIsDeleteStepTwoOpen(true);
+              }}
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isDeleteStepTwoOpen}
+        onOpenChange={(open) => {
+          if (deleteAccountBusy) return;
+          setIsDeleteStepTwoOpen(open);
+          if (!open) {
+            setDeleteConfirmText("");
+            setDeleteError("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Account: Step 2 of 2</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Type <span className="font-mono font-semibold text-foreground">{DELETE_CONFIRMATION}</span> to permanently
+              delete this account.
+            </p>
+            <Input
+              value={deleteConfirmText}
+              onChange={(event) => setDeleteConfirmText(event.target.value)}
+              placeholder={DELETE_CONFIRMATION}
+            />
+            {deleteError && <div className="text-sm text-rose-600">{deleteError}</div>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteStepTwoOpen(false)} disabled={deleteAccountBusy}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteFinal}
+              disabled={deleteAccountBusy || deleteConfirmText.trim().toUpperCase() !== DELETE_CONFIRMATION}
+            >
+              {deleteAccountBusy ? "Deleting..." : "Permanently Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
