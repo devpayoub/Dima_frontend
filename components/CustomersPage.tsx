@@ -40,6 +40,7 @@ import { IssueCardDialog } from './IssueCardDialog';
 import { useAuth } from './AuthProvider';
 import { buildPublicCardUrl } from '../lib/links';
 import { resolveCardTemplate } from '../lib/templateSerialization';
+import { todayISO, createTransaction } from '../lib/transactionHelpers';
 
 interface CustomersPageProps {
   customers: Customer[];
@@ -116,25 +117,14 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
           };
       }
 
-      const now = new Date();
-      const initialTransaction: Transaction = {
-          id: `tx-init-${Date.now()}`,
+      const initialTransaction = createTransaction({
           type: 'issued',
           amount: 0,
-          date: now.toLocaleString(undefined, { 
-              month: 'short', 
-              day: 'numeric', 
-              year: 'numeric', 
-              hour: 'numeric', 
-              minute: '2-digit', 
-              hour12: true 
-          }),
-          timestamp: now.getTime(),
           title: "Card Issued",
           actorName,
           actorRole,
           actorId
-      };
+      });
 
       const newCard: IssuedCard = {
           id: `card-${Date.now()}`,
@@ -142,7 +132,7 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
           campaignId: campaign.id,
           campaignName: campaign.name,
           stamps: 0,
-          lastVisit: new Date().toISOString().split('T')[0],
+          lastVisit: todayISO(),
           status: 'Active',
           history: [initialTransaction]
       };
@@ -187,38 +177,27 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
     if (newStamps < 0) return; 
 
     // Create transaction
-    const now = new Date();
     const txType = reset ? 'redeem' : (amount > 0 ? 'stamp_add' : 'stamp_remove');
     const txTitle = reset ? 'Reward Redeemed' : (amount > 0 ? 'Stamp Collected' : 'Stamp Removed');
-    const newTransaction: Transaction = {
-        id: `tx-${Date.now()}`,
+    const newTransaction = createTransaction({
         type: txType,
         amount: reset ? 0 : amount,
-        date: now.toLocaleString(undefined, { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric', 
-            hour: 'numeric', 
-            minute: '2-digit', 
-            hour12: true 
-        }),
-        timestamp: now.getTime(),
         title: txTitle,
         actorName: currentUser?.businessName ?? "Owner",
         actorRole: currentUser?.role ?? "owner",
         actorId: currentUser?.id
-    };
+    });
 
     const updatedCard = { 
         ...activeCard, 
         stamps: newStamps,
-        lastVisit: new Date().toISOString().split('T')[0],
+        lastVisit: todayISO(),
         history: [newTransaction, ...activeCard.history] // Prepend new transaction
     };
 
     if (reset) {
         updatedCard.status = 'Redeemed';
-        updatedCard.completedDate = new Date().toISOString().split('T')[0];
+        updatedCard.completedDate = todayISO();
     }
 
     const updatedCustomers = customers.map(c => {
@@ -242,26 +221,15 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
   const handleRemoveStamp = (customer: Customer, card: IssuedCard) => {
     // Instant update
     if (card.stamps > 0) {
-        const now = new Date();
-        const newTransaction: Transaction = {
-            id: `tx-${Date.now()}`,
+        const newTransaction = createTransaction({
             type: 'stamp_remove',
             amount: -1,
-            date: now.toLocaleString(undefined, { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric', 
-                hour: 'numeric', 
-                minute: '2-digit', 
-                hour12: true 
-            }),
-            timestamp: now.getTime(),
             title: 'Stamp Removed',
             remarks: 'Manual correction',
             actorName: currentUser?.businessName ?? "Owner",
             actorRole: currentUser?.role ?? "owner",
             actorId: currentUser?.id
-        };
+        });
 
         const updatedCard = { 
             ...card, 

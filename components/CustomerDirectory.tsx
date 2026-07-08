@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Mail, Phone, Edit, UserPlus } from "lucide-react";
+import { Mail, Phone, Edit, UserPlus, RefreshCw } from "lucide-react";
 import { SearchInput } from "./ui/search-input";
 import { AvatarInitials } from "./ui/avatar-initials";
 import { Customer } from '../types';
@@ -10,15 +10,20 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Label } from "./ui/label";
 import { upsertCustomer } from '../lib/db/customers';
 import { useAuth } from './AuthProvider';
+import { Alert } from './ui/alert';
+import { CustomersSkeleton } from './skeletons/CustomersSkeleton';
 
 interface CustomerDirectoryProps {
   customers: Customer[];
   setCustomers: React.Dispatch<React.SetStateAction<Customer[]>>;
   readOnly?: boolean;
   refreshData?: () => Promise<void>;
+  dataReady?: boolean;
 }
 
-export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers, setCustomers, readOnly = false, refreshData }) => {
+export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers, setCustomers, readOnly = false, refreshData, dataReady = false }) => {
+  if (!dataReady) return <CustomersSkeleton />;
+
   const { currentOwner } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -26,6 +31,7 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
   const [formData, setFormData] = useState({ name: '', email: '', mobile: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [refreshBusy, setRefreshBusy] = useState(false);
 
   const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,18 +104,21 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
         )}
       </div>
 
-      <div className="w-full max-w-sm">
+      <div className="flex items-center gap-2 w-full max-w-sm">
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="Search customers..."
         />
+        {refreshData && (
+          <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="shrink-0">
+            <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
-        </div>
+        <Alert variant="error">{error}</Alert>
       )}
 
       <div className="rounded-xl border bg-white flex-1 overflow-auto shadow-sm">

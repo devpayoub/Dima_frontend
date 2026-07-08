@@ -3,7 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { Sidebar, NAV_ITEMS, SidebarContent } from './components/Sidebar';
 import { Template, Customer, IssuedCard } from './types';
 import { templates } from './data/templates';
-import { Spinner } from './components/ui/spinner';
+
 import { BrowserRouter, Routes, Route, Outlet, useParams, useNavigate, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { toStoredTemplate, fromStoredTemplate } from './lib/templateSerialization';
@@ -19,6 +19,7 @@ import { fetchCustomersWithCards } from './lib/db/customers';
 import { fetchPublicScanEntryContext } from './lib/db/issuedCards';
 import { buildIssuedCardsKioskUrl, buildStaffPortalUrl, buildStaffScanEntryUrl } from './lib/links';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
+import { fetchDashboard } from './lib/api/dashboard';
 import { useSubscription } from './lib/useSubscription';
 import { SubscriptionProvider } from './components/SubscriptionContext';
 import { APP_ORIGIN } from './lib/siteConfig';
@@ -85,13 +86,15 @@ const StaffLoginPage = lazy(() => import('./components/StaffLoginPage').then((mo
 const SettingsPage = lazy(() => import('./components/SettingsPage').then((module) => ({ default: module.SettingsPage })));
 const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
 const DashboardPage = lazy(() => import('./components/DashboardPage').then((module) => ({ default: module.DashboardPage })));
+const RequestsPage = lazy(() => import('./components/RequestsPage').then((module) => ({ default: module.RequestsPage })));
 const PublicCampaignSignupPage = lazy(() => import('./components/PublicCampaignSignupPage').then((module) => ({ default: module.PublicCampaignSignupPage })));
+const PublicRequestPendingPage = lazy(() => import('./components/PublicRequestPendingPage').then((module) => ({ default: module.PublicRequestPendingPage })));
 const LandingPage = lazy(() => import('./components/LandingPage'));
 const ContactPage = lazy(() => import('./components/ContactPage'));
 
 const RouteLoader: React.FC = () => (
   <div className="flex min-h-[40vh] w-full items-center justify-center">
-    <Spinner />
+    <div className="animate-pulse rounded-md bg-muted h-8 w-8" />
   </div>
 );
 
@@ -215,9 +218,7 @@ const PublicCardWrapper: React.FC = () => {
       };
 
       let template: Template | undefined;
-      if (card.templateSnapshot) {
-        template = fromStoredTemplate(card.templateSnapshot);
-      } else if (data.campaign) {
+      if (data.campaign) {
         const stored = {
           id: data.campaign.id,
           name: data.campaign.name,
@@ -233,9 +234,12 @@ const PublicCardWrapper: React.FC = () => {
           colors: data.campaign.colors,
           totalStamps: data.campaign.total_stamps,
           social: data.campaign.social,
+          mode: data.campaign.mode ?? 'stamps',
           createdAt: data.campaign.created_at,
         };
         template = fromStoredTemplate(stored);
+      } else if (card.templateSnapshot) {
+        template = fromStoredTemplate(card.templateSnapshot);
       }
 
       if (template) setCardData({ card, customer, template });
@@ -246,7 +250,7 @@ const PublicCardWrapper: React.FC = () => {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Spinner />
+        <div className="animate-pulse rounded-md bg-muted h-8 w-8" />
       </div>
     );
   }
@@ -366,7 +370,7 @@ const StaffScanEntryWrapper: React.FC = () => {
   if (loading || loadingContext) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Spinner />
+        <div className="animate-pulse rounded-md bg-muted h-8 w-8" />
       </div>
     );
   }
@@ -487,9 +491,25 @@ const EditorWrapper: React.FC<{ onSave: (t: Template) => Promise<void>; template
   );
 };
 
-const DashboardLayout: React.FC = () => {
+const DashboardLayout: React.FC<{ pendingRequestCount: number; onPendingCountChange: (count: number) => void }> = ({ pendingRequestCount, onPendingCountChange }) => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    let active = true;
+    const fetchCount = async () => {
+      try {
+        const { getStampRequests } = await import('./lib/api/stampRequests');
+        const requests = await getStampRequests();
+        if (active) onPendingCountChange(requests.filter(r => r.status === 'pending').length);
+      } catch {}
+    };
+    const channel = supabase
+      .channel('sidebar_requests_count')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stamp_requests' }, () => fetchCount())
+      .subscribe();
+    return () => { active = false; supabase.removeChannel(channel); };
+  }, []);
 
   const activeTitle = NAV_ITEMS.find((item) => item.path === location.pathname)?.label ?? "Dashboard";
 
@@ -497,6 +517,7 @@ const DashboardLayout: React.FC = () => {
     <div className="flex min-h-screen bg-background text-foreground font-sans">
       <Sidebar
         onScanQr={() => window.dispatchEvent(new Event('open-qr-scan'))}
+        pendingRequestCount={pendingRequestCount}
       />
       <main className="relative flex min-h-screen flex-1 flex-col overflow-visible md:h-screen md:overflow-hidden">
         <div className="md:hidden sticky top-0 z-40 flex items-center justify-between border-b border-border/80 bg-card/95 px-4 py-3 backdrop-blur-sm">
@@ -543,6 +564,7 @@ const DashboardLayout: React.FC = () => {
                 window.dispatchEvent(new Event('open-qr-scan'));
                 setIsMobileNavOpen(false);
               }}
+              pendingRequestCount={pendingRequestCount}
             />
           </div>
         </div>
@@ -566,17 +588,22 @@ const AppRoutes: React.FC = () => {
   const [createdCards, setCreatedCards] = useState<Template[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [dataReady, setDataReady] = useState(false);
+  const [pendingRequestCount, setPendingRequestCount] = useState(0);
 
   const sub = useSubscription(createdCards, customers);
 
-  const loadData = useCallback(async (ownerId: string) => {
-    setDataReady(false);
-    const [storedCampaigns, storedCustomers] = await Promise.all([
-      fetchCampaigns(ownerId),
-      fetchCustomersWithCards(ownerId),
-    ]);
-    setCreatedCards(storedCampaigns.map(fromStoredTemplate));
-    setCustomers(storedCustomers);
+  const loadData = useCallback(async (ownerId: string, silent = false) => {
+    if (!silent) setDataReady(false);
+    try {
+      const data = await fetchDashboard();
+      setCreatedCards(data.campaigns.map(fromStoredTemplate));
+      setCustomers(data.customers);
+      setPendingRequestCount(data.pendingRequestCount);
+    } catch {
+      setCreatedCards([]);
+      setCustomers([]);
+      setPendingRequestCount(0);
+    }
     setDataReady(true);
   }, []);
 
@@ -592,7 +619,7 @@ const AppRoutes: React.FC = () => {
 
   const refreshData = useCallback(async () => {
     if (currentOwner) {
-      await loadData(currentOwner.id);
+      await loadData(currentOwner.id, true);
     }
   }, [currentOwner, loadData]);
 
@@ -650,6 +677,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/:slug/staff" element={withSuspense(<StaffLoginPage />)} />
         <Route path="/:slug/scan/:uniqueId" element={<StaffScanEntryWrapper />} />
         <Route path="/:slug/join/:campaignId" element={withSuspense(<PublicCampaignSignupPage />)} />
+        <Route path="/:slug/request-pending/:requestId" element={withSuspense(<PublicRequestPendingPage />)} />
         <Route path="/:slug/:uniqueId" element={<PublicCardWrapper />} />
         <Route path="/login" element={withSuspense(<LoginPage />)} />
         <Route path="/forgot-password" element={withSuspense(<ForgotPasswordPage />)} />
@@ -667,10 +695,10 @@ const AppRoutes: React.FC = () => {
             <Route path="/gallery" element={withSuspense(<TemplatesGallery />)} />
           </Route>
 
-          <Route element={<DashboardLayout />}>
+          <Route element={<DashboardLayout pendingRequestCount={pendingRequestCount} onPendingCountChange={setPendingRequestCount} />}>
             <Route element={<RequireRole allowed={["owner"]} />}>
             <Route path="/dashboard" element={
-                withSuspense(<DashboardPage campaigns={createdCards} customers={customers} />)
+                withSuspense(<DashboardPage campaigns={createdCards} customers={customers} dataReady={dataReady} />)
               } />
               <Route path="/campaigns" element={
                 withSuspense(
@@ -678,12 +706,14 @@ const AppRoutes: React.FC = () => {
                     cards={createdCards}
                     onDeleteCard={handleDeleteCard}
                     onToggleCampaignEnabled={handleToggleCampaignEnabled}
+                    dataReady={dataReady}
                   />
                 )
               } />
-              <Route path="/analytics" element={withSuspense(<AnalyticsPage customers={customers} campaigns={createdCards} />)} />
-              <Route path="/transactions" element={withSuspense(<TransactionsPage customers={customers} />)} />
+              <Route path="/analytics" element={withSuspense(<AnalyticsPage customers={customers} campaigns={createdCards} dataReady={dataReady} />)} />
+              <Route path="/transactions" element={withSuspense(<TransactionsPage customers={customers} refreshData={refreshData} dataReady={dataReady} />)} />
               <Route path="/settings" element={withSuspense(<SettingsPage />)} />
+              <Route path="/requests" element={withSuspense(<RequestsPage />)} />
             </Route>
 
             <Route element={<RequireRole allowed={["owner", "staff"]} />}>
@@ -705,6 +735,7 @@ const AppRoutes: React.FC = () => {
                     setCustomers={setCustomers}
                     readOnly={isStaff}
                     refreshData={refreshData}
+                    dataReady={dataReady}
                   />
                 )
               } />

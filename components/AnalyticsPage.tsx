@@ -15,10 +15,12 @@ import {
   Users,
   TrendingUp
 } from "lucide-react";
+import { AnalyticsSkeleton } from "./skeletons/AnalyticsSkeleton";
 
 interface AnalyticsPageProps {
   customers: Customer[];
   campaigns: Template[];
+  dataReady?: boolean;
 }
 
 type ActivityBucket = {
@@ -82,7 +84,9 @@ const formatDateRangeLabel = (startDate: string, endDate: string) => {
   return `${startLabel} - ${endLabel}`;
 };
 
-export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ customers, campaigns }) => {
+export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ customers, campaigns, dataReady = false }) => {
+  if (!dataReady) return <AnalyticsSkeleton />;
+
   const [startDate, setStartDate] = useState(() => {
     const start = new Date();
     start.setDate(start.getDate() - (DEFAULT_DAY_COUNT - 1));

@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
+import { isPremiumTier } from "../lib/utils";
 
 interface RequireTierProps {
   children?: React.ReactNode;
@@ -14,7 +15,7 @@ export const RequireTier: React.FC<RequireTierProps> = ({ children, redirectTo =
     return <Navigate to="/login" replace />;
   }
 
-  const isPremium = currentOwner.tier === "premium" || currentOwner.tier === "pro";
+  const isPremium = isPremiumTier(currentOwner.tier);
 
   if (!isPremium) {
     return <Navigate to={redirectTo} replace />;

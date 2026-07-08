@@ -23,6 +23,13 @@ export async function getScanContext(slug: string, uniqueId: string): Promise<an
   return apiFetch<any>(`/api/v1/public/scan/${slug}/${uniqueId}`);
 }
 
+export async function lookupCustomerByPhone(
+  slug: string,
+  phone: string
+): Promise<{ found: boolean; name?: string; email?: string; mobile?: string }> {
+  return apiFetch(`/api/v1/public/customer/${slug}/${encodeURIComponent(phone)}`);
+}
+
 export async function generateReward(): Promise<{ code: string; message: string }> {
   return apiFetch<{ code: string; message: string }>("/api/v1/public/reward");
 }

@@ -17,12 +17,14 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useAuth } from './AuthProvider';
 import { loadFromStorage, saveToStorage } from '../lib/storage';
-import { cn } from '../lib/utils';
+import { cn, isPremiumTier } from '../lib/utils';
 import { formatAction, formatTimestamp } from '../lib/format';
+import { DashboardSkeleton } from './skeletons/DashboardSkeleton';
 
 interface DashboardPageProps {
   campaigns: Template[];
   customers: Customer[];
+  dataReady?: boolean;
 }
 
 interface ActivityItem extends Transaction {
@@ -47,9 +49,10 @@ const defaultDismissState: DashboardDismissState = {
   getStarted: false,
 };
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({ campaigns, customers }) => {
+export const DashboardPage: React.FC<DashboardPageProps> = ({ campaigns, customers, dataReady = false }) => {
+  if (!dataReady) return <DashboardSkeleton />;
   const { currentOwner } = useAuth();
-  const isPremium = currentOwner?.tier === 'premium' || currentOwner?.tier === 'pro';
+  const isPremium = isPremiumTier(currentOwner?.tier);
   const cards = useMemo(() => customers.flatMap((customer) => customer.cards), [customers]);
   const [dismissedSections, setDismissedSections] = useState<DashboardDismissState>(defaultDismissState);
 

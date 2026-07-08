@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ICON_OPTIONS } from '../lib/iconRegistry';
 import { useAuth } from './AuthProvider';
 import { deleteCampaignAssetByUrl, type CampaignAssetKind, uploadCampaignAsset } from '../lib/storage/campaignAssets';
+import { Alert } from './ui/alert';
 
 interface CardEditorProps {
   initialTemplate: Template;
@@ -633,7 +634,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave 
         </div>
       </div>
 
-      <div className="order-2 w-full bg-white p-4 pb-6 sm:p-6 lg:order-1 lg:h-[100dvh] lg:w-1/3 lg:border-r lg:p-10 lg:pb-10 lg:overflow-hidden">
+      <div className="order-2 w-full bg-white p-4 pb-6 sm:p-6 lg:order-1 lg:h-[100dvh] lg:w-1/3 lg:border-r lg:p-10 lg:pb-10 lg:overflow-hidden lg:flex lg:flex-col">
         <div className="mb-2 flex items-center justify-between gap-3 shrink-0">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={handleCancel} className="rounded-full">
@@ -654,7 +655,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave 
             </Button>
         </div>
 
-        <div className="px-3 sm:px-4 lg:flex-1 lg:overflow-y-auto lg:px-3 lg:pr-3 xl:px-4 lg:no-scrollbar">
+        <div className="px-3 sm:px-4 lg:flex-1 lg:overflow-y-auto lg:px-3 lg:pr-3 xl:px-4">
             <Accordion type="multiple" value={openSections} onValueChange={setOpenSections} className="w-full">
                 <AccordionItem value="general">
                     <AccordionTrigger>
@@ -1150,8 +1151,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave 
 
         <div className="mt-8 border-t pt-6 lg:mt-auto lg:shrink-0">
             {saveError && (
-                <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                    {saveError}
+                <div className="mb-4">
+                    <Alert variant="error">{saveError}</Alert>
                 </div>
             )}
             <Button

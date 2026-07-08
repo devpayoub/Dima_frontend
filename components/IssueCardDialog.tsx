@@ -10,6 +10,7 @@ import { SearchInput } from "./ui/search-input";
 import { AvatarInitials } from "./ui/avatar-initials";
 import { useAuth } from './AuthProvider';
 import { buildPublicCardUrl } from '../lib/links';
+import { Alert } from './ui/alert';
 
 interface IssueCardDialogProps {
     isOpen: boolean;
@@ -242,9 +243,7 @@ export const IssueCardDialog: React.FC<IssueCardDialogProps> = ({
                             <div className="w-full space-y-1"><p className="text-sm uppercase tracking-wider text-muted-foreground">Issuing Card</p><div className="text-lg font-bold sm:text-xl">{selectedCampaign?.name}</div></div>
                             <div className="w-full space-y-1 border-y py-4"><p className="text-sm uppercase tracking-wider text-muted-foreground">To Customer</p><div className="flex items-center justify-center gap-2 text-base font-semibold sm:text-lg"><User size={18} />{selectedCustomer ? selectedCustomer.name : newCustomerData.name}</div></div>
                             {submitError && (
-                                <div className="w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                                    {submitError}
-                                </div>
+                                <Alert variant="error">{submitError}</Alert>
                             )}
                         </div>
                     )}

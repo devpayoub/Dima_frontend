@@ -18,11 +18,15 @@ import { Label } from './ui/label';
 import { useSubscriptionContext } from './SubscriptionContext';
 import { buildCampaignSignupUrl } from '../lib/links';
 import { useAuth } from './AuthProvider';
+import { isPremiumTier } from '../lib/utils';
+import { Alert } from './ui/alert';
+import { CampaignsSkeleton } from './skeletons/CampaignsSkeleton';
 
 interface MyCardsProps {
   cards: Template[];
   onDeleteCard: (cardId: string) => Promise<void>;
   onToggleCampaignEnabled: (cardId: string, isEnabled: boolean) => Promise<void>;
+  dataReady?: boolean;
 }
 
 interface ResponsiveCardItemProps {
@@ -174,9 +178,11 @@ export const MyCards: React.FC<MyCardsProps> = ({
   cards,
   onDeleteCard,
   onToggleCampaignEnabled,
+  dataReady = false,
 }) => {
+  if (!dataReady) return <CampaignsSkeleton />;
   const { currentOwner } = useAuth();
-  const isPremium = currentOwner?.tier === 'premium' || currentOwner?.tier === 'pro';
+  const isPremium = isPremiumTier(currentOwner?.tier);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [qrCard, setQrCard] = useState<Template | null>(null);
   const [toggleBusyId, setToggleBusyId] = useState<string | null>(null);
@@ -272,9 +278,7 @@ export const MyCards: React.FC<MyCardsProps> = ({
             </DialogDescription>
           </DialogHeader>
           {deleteError && (
-            <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              {deleteError}
-            </div>
+            <Alert variant="error">{deleteError}</Alert>
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)} disabled={deleteBusy}>Cancel</Button>

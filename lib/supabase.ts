@@ -20,5 +20,10 @@ export const supabase = createClient(
       autoRefreshToken: isSupabaseConfigured,
       detectSessionInUrl: isSupabaseConfigured,
     },
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
   }
 );

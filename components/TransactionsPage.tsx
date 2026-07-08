@@ -2,16 +2,19 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { 
     Calendar, History,
-    Gift, Plus, Minus, CreditCard, ArrowUpDown, Download
+    Gift, Plus, Minus, CreditCard, ArrowUpDown, Download, RefreshCw
 } from "lucide-react";
 import { SearchInput } from "./ui/search-input";
 import { Customer, Transaction } from '../types';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { getTransactionMeta } from '../lib/format';
+import { TransactionsSkeleton } from './skeletons/TransactionsSkeleton';
 
 interface TransactionsPageProps {
   customers: Customer[];
+  refreshData?: () => Promise<void>;
+  dataReady?: boolean;
 }
 
 // Flattened Transaction Type
@@ -27,12 +30,15 @@ const escapeCsvValue = (value: string | number | undefined) => {
     return `"${normalized.replace(/"/g, '""')}"`;
 };
 
-export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers }) => {
+export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, refreshData, dataReady = false }) => {
+  if (!dataReady) return <TransactionsSkeleton />;
+
   const PAGE_SIZE = 50;
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [refreshBusy, setRefreshBusy] = useState(false);
 
   // 1. Flatten Data
   const allTransactions: FlatTransaction[] = useMemo(() => {
@@ -174,6 +180,11 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers })
             </div>
 
              <div className="ml-auto flex items-center gap-2">
+                 {refreshData && (
+                   <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="gap-2">
+                     <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
+                   </Button>
+                 )}
                  <Button
                     variant="outline"
                     size="sm"

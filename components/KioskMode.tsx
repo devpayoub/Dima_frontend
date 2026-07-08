@@ -7,6 +7,7 @@ import { Label } from './ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Plus, Gift, History, User, ChevronLeft, Minus, Lock, CheckCircle, RefreshCcw, ShieldCheck, Clock3 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { todayISO, createTransaction } from '../lib/transactionHelpers';
 
 interface KioskModeProps {
   customer: Customer;
@@ -23,36 +24,6 @@ interface KioskModeProps {
   onScanRequest?: () => void;
   mutationBusy?: boolean;
 }
-
-// Helper to create timestamped transaction
-const createTransaction = (
-    type: Transaction['type'],
-    amount: number,
-    title: string,
-    remarks?: string,
-    actor?: { id?: string; name: string; role: 'owner' | 'staff' }
-): Transaction => {
-    const now = new Date();
-    return {
-        id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        type,
-        amount,
-        date: now.toLocaleString(undefined, { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric', 
-            hour: 'numeric', 
-            minute: '2-digit', 
-            hour12: true 
-        }),
-        timestamp: now.getTime(),
-        title,
-        remarks,
-        actorId: actor?.id,
-        actorName: actor?.name,
-        actorRole: actor?.role
-    };
-};
 
 const formatKioskAction = (type: Transaction['type']) => {
     switch (type) {
@@ -160,12 +131,12 @@ export const KioskMode: React.FC<KioskModeProps> = ({
 
   const performAddStamp = async () => {
       setIsAnimating(true);
-      const tx = createTransaction('stamp_add', 1, 'Stamp Collected', undefined, { id: actorId, name: actorName, role: actorRole });
+      const tx = createTransaction({ type: 'stamp_add', amount: 1, title: 'Stamp Collected', actorId, actorName, actorRole });
 
       try {
           await onUpdateCard(customer.id, card.id, {
               stamps: card.stamps + 1,
-              lastVisit: new Date().toISOString().split('T')[0],
+              lastVisit: todayISO(),
               history: [tx, ...card.history]
           });
       } finally {
@@ -174,7 +145,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
   };
 
   const performRemoveStamp = async () => {
-      const tx = createTransaction('stamp_remove', -1, 'Stamp Removed', 'Manual Correction', { id: actorId, name: actorName, role: actorRole });
+      const tx = createTransaction({ type: 'stamp_remove', amount: -1, title: 'Stamp Removed', remarks: 'Manual Correction', actorId, actorName, actorRole });
 
       await onUpdateCard(customer.id, card.id, {
           stamps: Math.max(0, card.stamps - 1),
@@ -183,12 +154,12 @@ export const KioskMode: React.FC<KioskModeProps> = ({
   };
 
   const performRedeem = async () => {
-      const tx = createTransaction('redeem', 0, 'Reward Redeemed', redemptionRemarks, { id: actorId, name: actorName, role: actorRole });
+      const tx = createTransaction({ type: 'redeem', amount: 0, title: 'Reward Redeemed', remarks: redemptionRemarks, actorId, actorName, actorRole });
 
       // Lock the card by setting status to Redeemed
       await onUpdateCard(customer.id, card.id, {
           status: 'Redeemed',
-          completedDate: new Date().toISOString().split('T')[0],
+          completedDate: todayISO(),
           history: [tx, ...card.history]
       });
   };

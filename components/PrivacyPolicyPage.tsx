@@ -1,8 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
-import { Button } from "./ui/button";
+import { ShieldCheck } from "lucide-react";
 import { PublicFooter } from "./PublicFooter";
+import { PublicHeader } from "./PublicHeader";
 import { SUPPORT_EMAIL } from "../lib/siteConfig";
 
 const sections = [
@@ -46,19 +45,7 @@ const sections = [
 export const PrivacyPolicyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-[#1d1d1f]">
-      <header className="fixed top-0 z-30 w-full border-b border-black/[0.06] bg-white/78 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-[88rem] items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
-          <Link to="/" className="inline-flex items-center">
-            <img src="/stampee.svg" alt="Stampee" className="h-8 w-auto" />
-          </Link>
-          <Button asChild variant="ghost" className="rounded-full text-sm text-[#1d1d1f] hover:bg-black/[0.05]">
-            <Link to="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Home
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="pt-20">
         <section className="bg-[#ff6a00] px-4 py-16 sm:px-6 lg:px-10 lg:py-20">

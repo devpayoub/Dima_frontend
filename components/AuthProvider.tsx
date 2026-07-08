@@ -69,17 +69,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfileWithRetry = useCallback(async (userId: string, attempts = 5, delayMs = 200): Promise<User | null> => {
+  const fetchProfileWithRetry = useCallback(async (userId: string, attempts = 5, delayMs = 200): Promise<{ profile: User | null; staffAccounts: User[] }> => {
     for (let attempt = 0; attempt < attempts; attempt += 1) {
-      const profile = await fetchProfile(userId);
-      if (profile) return profile;
+      const result = await fetchProfile(userId);
+      if (result.profile) return result;
       if (attempt < attempts - 1) {
         await new Promise<void>((resolve) => {
           window.setTimeout(() => resolve(), delayMs);
         });
       }
     }
-    return null;
+    return { profile: null, staffAccounts: [] };
   }, []);
 
   const waitForAuthUser = useCallback(async (userId: string, attempts = 12, delayMs = 150): Promise<boolean> => {
@@ -138,14 +138,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loadFullSession = useCallback(async (userId: string, authUser?: AuthUserLike) => {
     await waitForAuthUser(userId);
     setIsEmailVerified(Boolean(authUser?.email_confirmed_at));
-    let profile = await fetchProfileWithRetry(userId);
-    if (!profile && authUser) {
+    let result = await fetchProfileWithRetry(userId);
+    if (!result.profile && authUser) {
       const repaired = await createMissingProfile(authUser);
       if (repaired.ok) {
-        profile = await fetchProfileWithRetry(userId, 3, 150);
+        result = await fetchProfileWithRetry(userId, 3, 150);
       }
     }
-    if (!profile) {
+    if (!result.profile) {
       setCurrentUser(null);
       setCurrentOwner(null);
       setStaffAccounts([]);
@@ -153,15 +153,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    setCurrentUser(profile);
+    setCurrentUser(result.profile);
 
-    if (profile.role === "owner") {
-      setCurrentOwner(profile);
-      setStaffAccounts(await fetchStaffAccounts(profile.id));
-    } else if (profile.ownerId) {
-      const owner = await fetchProfile(profile.ownerId);
-      setCurrentOwner(owner);
-      if (owner) setStaffAccounts(await fetchStaffAccounts(owner.id));
+    if (result.profile.role === "owner") {
+      setCurrentOwner(result.profile);
+      setStaffAccounts(result.staffAccounts);
+    } else if (result.profile.ownerId) {
+      const ownerResult = await fetchProfile(result.profile.ownerId);
+      setCurrentOwner(ownerResult.profile);
+      if (ownerResult.profile) setStaffAccounts(ownerResult.staffAccounts);
     }
   }, [createMissingProfile, fetchProfileWithRetry, waitForAuthUser]);
 

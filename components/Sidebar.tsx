@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, CreditCard, Settings, LogOut, Wallet, History, QrCode, Crown, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Settings, LogOut, Wallet, History, QrCode, Crown, Sparkles, Bell } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -9,11 +9,13 @@ import { useSubscriptionContext } from './SubscriptionContext';
 interface SidebarProps {
   className?: string;
   onScanQr?: () => void;
+  pendingRequestCount?: number;
 }
 
 interface SidebarContentProps {
   onNavigate?: () => void;
   onScanQr?: () => void;
+  pendingRequestCount?: number;
 }
 
 export const NAV_ITEMS = [
@@ -23,6 +25,7 @@ export const NAV_ITEMS = [
   { path: '/transactions', label: 'Transactions', icon: History, roles: ['owner'] },
   { path: '/customers', label: 'Customers', icon: Users, roles: ['owner', 'staff'] },
   { path: '/analytics', label: 'Analytics', icon: Sparkles, roles: ['owner'] },
+  { path: '/requests', label: 'Requests', icon: Bell, roles: ['owner'] },
   { path: '/settings', label: 'Settings', icon: Settings, roles: ['owner'] },
 ];
 
@@ -71,7 +74,7 @@ const PlanBadge: React.FC = () => {
   );
 };
 
-export const SidebarContent: React.FC<SidebarContentProps> = ({ onNavigate, onScanQr }) => {
+export const SidebarContent: React.FC<SidebarContentProps> = ({ onNavigate, onScanQr, pendingRequestCount }) => {
   const navigate = useNavigate();
   const { currentUser, currentOwner, isStaff, logout } = useAuth();
 
@@ -93,10 +96,17 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({ onNavigate, onSc
               {({ isActive }) => (
                 <Button
                   variant={isActive ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-2"
+                  className="w-full justify-between gap-2"
                 >
-                  <item.icon size={20} />
-                  {item.label}
+                  <span className="flex items-center gap-2">
+                    <item.icon size={20} />
+                    {item.label}
+                  </span>
+                  {item.path === '/requests' && (pendingRequestCount ?? 0) > 0 && (
+                    <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                      {pendingRequestCount! > 99 ? '99+' : pendingRequestCount}
+                    </span>
+                  )}
                 </Button>
               )}
             </NavLink>
@@ -144,10 +154,10 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({ onNavigate, onSc
   );
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ className, onScanQr }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ className, onScanQr, pendingRequestCount }) => {
   return (
     <div className={cn("hidden h-screen w-72 border-r border-border/80 bg-card md:block", className)}>
-      <SidebarContent onScanQr={onScanQr} />
+      <SidebarContent onScanQr={onScanQr} pendingRequestCount={pendingRequestCount} />
     </div>
   );
 };

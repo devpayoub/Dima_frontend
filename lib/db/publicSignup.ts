@@ -10,6 +10,7 @@ export interface PublicCampaignSignupContext {
     id: string;
     name: string;
     isEnabled: boolean;
+    mode?: 'stamps' | 'points';
   };
 }
 
@@ -36,6 +37,7 @@ export async function fetchPublicCampaignSignupContext(
         id: res.campaign.id,
         name: res.campaign.name,
         isEnabled: res.campaign.isEnabled !== false,
+        mode: res.campaign.mode,
       },
     };
   } catch {

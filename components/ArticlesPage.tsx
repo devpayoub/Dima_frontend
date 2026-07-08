@@ -2,9 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CalendarDays, QrCode, Sparkles } from "lucide-react";
 import { articles } from "../data/articles";
-import { useAuth } from "./AuthProvider";
 import { PublicFooter } from "./PublicFooter";
-import { Button } from "./ui/button";
+import { PublicHeader } from "./PublicHeader";
 
 const ArticleCover: React.FC<{
   title: string;
@@ -54,10 +53,6 @@ const ArticleCover: React.FC<{
 );
 
 export const ArticlesPage: React.FC = () => {
-  const { currentUser, isStaff } = useAuth();
-  const primaryPath = currentUser ? (isStaff ? "/issued-cards" : "/dashboard") : "/signup";
-  const primaryLabel = currentUser ? "Open dashboard" : "Create account";
-
   return (
     <div className="min-h-screen bg-[#f3f2ef] text-[#1d1d1f]">
       <style>{`
@@ -78,24 +73,7 @@ export const ArticlesPage: React.FC = () => {
         }
       `}</style>
 
-      <header className="fixed top-0 z-30 w-full border-b border-black/[0.06] bg-white/78 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-[112rem] items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
-          <Link to="/" className="inline-flex items-center">
-            <img src="/stampee.svg" alt="Stampee" className="h-8 w-auto" />
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Button asChild variant="ghost" className="hidden rounded-full text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.05] sm:inline-flex">
-              <Link to="/">Home</Link>
-            </Button>
-            <Button asChild variant="ghost" className="hidden rounded-full text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.05] sm:inline-flex">
-              <Link to="/showcase">Demos</Link>
-            </Button>
-            <Button asChild className="rounded-full bg-[#1d1d1f] px-5 text-sm font-medium text-white hover:bg-black/80">
-              <Link to={primaryPath}>{primaryLabel}</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="pb-20 pt-20">
         <section className="bg-[#ff6a00] px-4 py-16 sm:px-6 lg:px-10 lg:py-20">

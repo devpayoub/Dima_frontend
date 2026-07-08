@@ -6,7 +6,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
-  Plus, CreditCard, MonitorPlay, MoreHorizontal, Trash, ExternalLink, Lock, QrCode
+  Plus, CreditCard, MonitorPlay, MoreHorizontal, Trash, ExternalLink, Lock, QrCode, RefreshCw
 } from "lucide-react";
 import { SearchInput } from "./ui/search-input";
 import { AvatarInitials } from "./ui/avatar-initials";
@@ -21,10 +21,13 @@ import { IssueCardDialog } from './IssueCardDialog';
 import { resolveCardTemplate, toStoredTemplate } from '../lib/templateSerialization';
 import { useAuth } from './AuthProvider';
 import { buildPublicCardUrl } from '../lib/links';
+import { todayISO, createTransaction } from '../lib/transactionHelpers';
 import { ScanDetectionResult, ScanQrDialog } from './ScanQrDialog';
 import { insertIssuedCard, updateIssuedCard, deleteIssuedCard, insertTransaction, inspectScannedCard } from '../lib/db/issuedCards';
 import { upsertCustomer } from '../lib/db/customers';
 import { useSubscriptionContext } from './SubscriptionContext';
+import { Alert } from './ui/alert';
+import { IssuedCardsSkeleton } from './skeletons/IssuedCardsSkeleton';
 
 interface IssuedCardsPageProps {
   customers: Customer[];
@@ -35,6 +38,8 @@ interface IssuedCardsPageProps {
 }
 
 export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, campaigns, setCustomers, refreshData, dataReady = false }) => {
+  if (!dataReady) return <IssuedCardsSkeleton />;
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const { currentOwner, isEmailVerified, isStaff, currentUser } = useAuth();
@@ -42,6 +47,7 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
   const canIssue = isEmailVerified;
   const [mutationBusy, setMutationBusy] = useState(false);
   const [mutationError, setMutationError] = useState("");
+  const [refreshBusy, setRefreshBusy] = useState(false);
 
   const [isIssueOpen, setIsIssueOpen] = useState(false);
   const [activeKioskData, setActiveKioskData] = useState<{ customer: Customer, card: IssuedCard, template: Template } | null>(null);
@@ -202,21 +208,14 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
       }
     }
 
-    const now = new Date();
-    const initialTransaction: Transaction = {
-      id: `tx-init-${Date.now()}`,
+    const initialTransaction = createTransaction({
       type: 'issued',
       amount: 0,
-      date: now.toLocaleString(undefined, {
-        month: 'short', day: 'numeric', year: 'numeric',
-        hour: 'numeric', minute: '2-digit', hour12: true
-      }),
-      timestamp: now.getTime(),
       title: "Card Issued",
       actorName,
       actorRole,
       actorId
-    };
+    });
 
     const newCard: IssuedCard = {
       id: `card-${Date.now()}`,
@@ -224,7 +223,7 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
       campaignId: campaign.id,
       campaignName: campaign.name,
       stamps: 0,
-      lastVisit: new Date().toISOString().split('T')[0],
+      lastVisit: todayISO(),
       status: 'Active',
       history: [initialTransaction],
       templateSnapshot: toStoredTemplate(campaign)
@@ -444,17 +443,20 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
       </div>
 
       {mutationError && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {mutationError}
-        </div>
+        <Alert variant="error">{mutationError}</Alert>
       )}
 
-      <div className="w-full sm:max-w-sm">
+      <div className="flex items-center gap-2 w-full sm:max-w-sm">
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="Find a card..."
         />
+        {refreshData && (
+          <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="shrink-0">
+            <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-white shadow-sm">

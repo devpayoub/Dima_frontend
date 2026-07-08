@@ -27,3 +27,7 @@ export function getTransactionMeta(type: string) {
 export function formatNumber(n: number) {
   return new Intl.NumberFormat().format(n);
 }
+
+export function todayISO(): string {
+  return new Date().toISOString().split('T')[0];
+}

@@ -18,13 +18,13 @@ export async function fetchProfileDetailed(_userId: string): Promise<ProfileFetc
   }
 }
 
-export async function fetchProfile(_userId: string): Promise<User | null> {
+export async function fetchProfile(_userId: string): Promise<{ profile: User | null; staffAccounts: User[] }> {
   try {
     const res = await apiAuth.me();
-    // If we're requesting a different user, check if it's the owner profile returned
-    return res.profile.id === _userId ? res.profile : (res.ownerProfile || res.profile);
+    const profile = res.profile.id === _userId ? res.profile : (res.ownerProfile || res.profile);
+    return { profile, staffAccounts: res.staffAccounts ?? [] };
   } catch {
-    return null;
+    return { profile: null, staffAccounts: [] };
   }
 }
 

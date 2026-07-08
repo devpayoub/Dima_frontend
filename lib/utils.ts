@@ -44,3 +44,7 @@ export function resolveHexAndOpacity(cls: string | undefined, fallback = '#00000
   const opacity = extractIntensity(cls) / 100;
   return { hex, opacity };
 }
+
+export function isPremiumTier(tier?: string): boolean {
+  return tier === 'premium' || tier === 'pro';
+}
