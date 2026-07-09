@@ -25,6 +25,33 @@ export const RequestsPage: React.FC = () => {
   const [refreshBusy, setRefreshBusy] = useState(false);
   const loadingRef = useRef(false);
 
+  const loadRequests = async () => {
+    try {
+      setLoading(true);
+      const data = await getStampRequests();
+      const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setRequests(sorted);
+    } catch (err: any) {
+      setError(err.message || "Failed to load requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRequestsSilent = useCallback(async () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    try {
+      const data = await getStampRequests();
+      const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setRequests(sorted);
+    } catch {
+      // silent — ignore errors on background refresh
+    } finally {
+      loadingRef.current = false;
+    }
+  }, []);
+
   useEffect(() => {
     loadRequests();
   }, []);
@@ -62,33 +89,6 @@ export const RequestsPage: React.FC = () => {
   }, [ownerId, loadRequestsSilent]);
 
   useEffect(() => { setCurrentPage(1); }, [searchQuery]);
-
-  const loadRequests = async () => {
-    try {
-      setLoading(true);
-      const data = await getStampRequests();
-      const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setRequests(sorted);
-    } catch (err: any) {
-      setError(err.message || "Failed to load requests");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadRequestsSilent = useCallback(async () => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-    try {
-      const data = await getStampRequests();
-      const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setRequests(sorted);
-    } catch {
-      // silent — ignore errors on background refresh
-    } finally {
-      loadingRef.current = false;
-    }
-  }, []);
 
   const filteredRequests = useMemo(() =>
     requests.filter(r =>
