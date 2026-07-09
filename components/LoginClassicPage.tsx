@@ -49,7 +49,7 @@ export const LoginClassicPage: React.FC = () => {
     setError("");
     setBusy(true);
     try {
-      const result = await withTimeout(login(email, password));
+      const result = await withTimeout<any>(login(email, password));
       if (!result.ok) {
         setError(result.error);
       } else {

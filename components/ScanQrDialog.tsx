@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
+// @ts-ignore - Vite handles this ?url import at build time
 import QrScannerWorkerPath from "qr-scanner/qr-scanner-worker.min.js?url";
 import { QrCode } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";

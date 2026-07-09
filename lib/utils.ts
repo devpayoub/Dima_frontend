@@ -36,10 +36,10 @@ export function hexToRgba(hex: string, alpha: number = 1): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export function resolveHexAndOpacity(value?: string): { hex: string; opacity: number } | null {
-  if (!value) return null;
+export function resolveHexAndOpacity(value?: string, defaultHex: string = '#000000'): { hex: string; opacity: number } {
+  if (!value) return { hex: defaultHex, opacity: 100 };
   const hex = extractHex(value);
-  if (!hex) return null;
+  if (!hex) return { hex: defaultHex, opacity: 100 };
   const intensity = extractIntensity(value);
   return { hex, opacity: intensity ?? 100 };
 }

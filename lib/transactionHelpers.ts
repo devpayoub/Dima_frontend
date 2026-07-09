@@ -1,4 +1,4 @@
-import { Transaction, IssuedCard, Customer } from '../types';
+import { Transaction, IssuedCard, Customer, UserRole } from '../types';
 
 export function todayISO(): string {
   return new Date().toISOString().split('T')[0];
@@ -11,7 +11,7 @@ export function createTransaction(params: {
   remarks?: string;
   actorId?: string;
   actorName?: string;
-  actorRole?: string;
+  actorRole?: UserRole;
 }): Transaction {
   const now = new Date();
   return {
@@ -24,7 +24,7 @@ export function createTransaction(params: {
     remarks: params.remarks ?? null,
     actorId: params.actorId ?? null,
     actorName: params.actorName ?? null,
-    actorRole: params.actorRole ?? null,
+    actorRole: params.actorRole ?? undefined,
   };
 }
 
@@ -77,7 +77,7 @@ export function createIssuedCardData(params: {
   const card: IssuedCard = {
     id: `card-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     uniqueId: crypto.randomUUID(),
-    customerId,
+
     campaignId: params.campaign.id,
     campaignName: params.campaign.name,
     stamps: 0,

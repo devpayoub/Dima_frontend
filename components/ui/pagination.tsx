@@ -99,16 +99,24 @@ interface PaginationBarProps {
 }
 
 function PaginationBar({ currentPage, totalPages, totalItems, onPageChange }: PaginationBarProps) {
-  if (totalPages <= 1) return null
+  if (totalPages <= 1) {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          {totalItems} item{totalItems !== 1 && "s"} total
+        </p>
+      </div>
+    )
+  }
 
   const pages = getVisiblePages(currentPage, totalPages)
 
   return (
-    <div className="flex items-center justify-between pt-4">
-      <p className="text-xs text-muted-foreground">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p className="text-xs text-muted-foreground order-2 sm:order-1">
         {totalItems} item{totalItems !== 1 && "s"} total
       </p>
-      <Pagination>
+      <Pagination className="mx-0 w-auto order-1 sm:order-2">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious

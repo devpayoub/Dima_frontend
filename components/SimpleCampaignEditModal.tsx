@@ -15,15 +15,15 @@ interface SimpleCampaignEditModalProps {
 
 export function SimpleCampaignEditModal({ campaign, isOpen, onClose, onSave }: SimpleCampaignEditModalProps) {
   const [name, setName] = useState(campaign.name);
-  const [rewardName, setRewardName] = useState(campaign.reward_name);
-  const [totalStamps, setTotalStamps] = useState(campaign.total_stamps.toString());
+  const [rewardName, setRewardName] = useState(campaign.rewardName);
+  const [totalStamps, setTotalStamps] = useState(campaign.totalStamps.toString());
   const [isSaving, setIsSaving] = useState(false);
 
   const previewTemplate = useMemo<Template>(() => ({
     ...campaign,
     name,
-    reward_name: rewardName,
-    total_stamps: parseInt(totalStamps, 10) || campaign.total_stamps,
+    rewardName: rewardName,
+    totalStamps: parseInt(totalStamps, 10) || campaign.totalStamps,
   }), [campaign, name, rewardName, totalStamps]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,8 +32,8 @@ export function SimpleCampaignEditModal({ campaign, isOpen, onClose, onSave }: S
     try {
       await onSave({
         name,
-        reward_name: rewardName,
-        total_stamps: parseInt(totalStamps, 10),
+        rewardName: rewardName,
+        totalStamps: parseInt(totalStamps, 10),
       });
       onClose();
     } catch (err) {

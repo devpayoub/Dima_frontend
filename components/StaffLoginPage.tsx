@@ -55,7 +55,7 @@ export const StaffLoginPage: React.FC = () => {
     setError("");
     setBusy(true);
     try {
-      const result = await withTimeout(loginStaff(email, pin, orgId));
+      const result = await withTimeout<any>(loginStaff(email, pin, orgId));
       if (!result.ok) {
         setError(result.error);
         return;

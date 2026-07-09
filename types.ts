@@ -40,7 +40,7 @@ export interface Template {
   totalStamps: number;
   social?: SocialLinks;
   mode?: 'stamps' | 'points';
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface SocialLinks {
