@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { Spinner } from './ui/spinner';
-import { Alert } from './ui/alert';
-import { fetchPublicCampaignSignupContext } from '../lib/db/publicSignup';
-import { createStampRequest } from '../lib/api/stampRequests';
-import { lookupCustomerByPhone } from '../lib/api/public';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { Alert } from '@/components/ui/alert';
+import { fetchPublicCampaignSignupContext } from '@/lib/db/publicSignup';
+import { createStampRequest } from '@/lib/api/stampRequests';
+import { lookupCustomerByPhone } from '@/lib/api/public';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 const SERVICE_UNAVAILABLE_MESSAGE = 'Service is temporarily unavailable. Please try again later.';
 
@@ -21,7 +21,6 @@ export const PublicCampaignSignupPage: React.FC = () => {
   const [error, setError] = useState('');
   const [context, setContext] = useState<any>(null);
 
-  // Step: 'mobile' | 'details'
   const [step, setStep] = useState<'mobile' | 'details'>('mobile');
   const [mobile, setMobile] = useState('');
   const [name, setName] = useState('');
@@ -176,7 +175,6 @@ export const PublicCampaignSignupPage: React.FC = () => {
             </div>
           )}
 
-          {/* Step 1: Mobile number */}
           {step === 'mobile' && (
             <form onSubmit={handleMobileSubmit} className="mt-6 space-y-5">
               <div className="grid gap-2">
@@ -207,7 +205,6 @@ export const PublicCampaignSignupPage: React.FC = () => {
             </form>
           )}
 
-          {/* Step 2: Name + email */}
           {step === 'details' && (
             <form onSubmit={handleDetailsSubmit} className="mt-6 space-y-5">
               {existingCustomer && (

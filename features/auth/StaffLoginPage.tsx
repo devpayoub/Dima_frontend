@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { AuthSplitLayout } from "./AuthSplitLayout";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Alert } from "./ui/alert";
-import { useAuth } from "./AuthProvider";
-import { buildIssuedCardsKioskUrl } from "../lib/links";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert } from "@/components/ui/alert";
+import { useAuth } from "@/components/AuthProvider";
+import { buildIssuedCardsKioskUrl } from "@/lib/links";
 
 const inputCls =
   "h-14 rounded-[1.2rem] border border-black/[0.08] bg-[#f4f1ea] px-4 text-[15px] text-[#171512] shadow-none placeholder:text-[#8a8276] focus-visible:border-black/25 focus-visible:bg-white focus-visible:ring-0";

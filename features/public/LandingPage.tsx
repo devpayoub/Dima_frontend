@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Lock } from 'lucide-react';
-import { hexToRgba } from '../lib/utils';
-import { useAuth } from './AuthProvider';
+import { hexToRgba } from '@/lib/utils';
+import { useAuth } from '@/components/AuthProvider';
 
 const style = document.createElement('style');
 style.textContent = `
@@ -35,7 +35,7 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T | null>, boolean
   return [ref, inView];
 }
 
-/* ─────────────────────────── helpers ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const COLORS = {
   bg: '#e8e4dc',
   card: '#f0ece3',
@@ -50,7 +50,7 @@ const COLORS = {
 const ACCENT = [COLORS.terracotta, COLORS.teal, COLORS.olive];
 const a = (i: number) => ACCENT[i % 3];
 
-/* ─────────────────────────── NavBar ──────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NavBar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const { currentUser } = useAuth();
@@ -127,14 +127,14 @@ const Navbar: React.FC = () => {
           onMouseEnter={e => (e.currentTarget.style.background = '#b56a3a')}
           onMouseLeave={e => (e.currentTarget.style.background = COLORS.terracotta)}
         >
-          {currentUser ? "Dashboard" : "Get Started — Free"}
+          {currentUser ? "Dashboard" : "Get Started â€” Free"}
         </Link>
       </div>
     </nav>
   );
 };
 
-/* ─────────────────────────── Hero ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Hero: React.FC = () => {
   const [ref, inView] = useInView();
   return (
@@ -179,7 +179,7 @@ const Hero: React.FC = () => {
           Digital Loyalty<br />Cards for Your<br /><span style={{ color: COLORS.terracotta }}>Small Business</span>
         </h1>
         <p className="reveal reveal-delay-2" style={{ fontSize: 17, lineHeight: 1.7, color: COLORS.muted, maxWidth: 480, marginBottom: 40 }}>
-          Launch a beautiful, mobile-first loyalty stamp card program in minutes — no app download required for your customers. Fully free, forever.
+          Launch a beautiful, mobile-first loyalty stamp card program in minutes â€” no app download required for your customers. Fully free, forever.
         </p>
         <div className="reveal reveal-delay-3" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
           <Link
@@ -192,7 +192,7 @@ const Hero: React.FC = () => {
             onMouseEnter={e => (e.currentTarget.style.background = '#b56a3a')}
             onMouseLeave={e => (e.currentTarget.style.background = COLORS.terracotta)}
           >
-            Start for Free →
+            Start for Free â†’
           </Link>
         </div>
       </div>
@@ -209,14 +209,14 @@ const Hero: React.FC = () => {
   );
 };
 
-/* ─────────────────────────── Stats ──────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Stats: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   const items = [
     { num: '100', suffix: '%', label: 'Free Forever', color: COLORS.terracotta },
-    { num: '∞', suffix: '', label: 'Campaigns & Cards', color: COLORS.teal },
+    { num: 'âˆž', suffix: '', label: 'Campaigns & Cards', color: COLORS.teal },
     { num: '0', suffix: 'ms', label: 'App Download Needed', color: COLORS.olive },
-    { num: '∞', suffix: '', label: 'Unlimited Everything', color: COLORS.terracotta },
+    { num: 'âˆž', suffix: '', label: 'Unlimited Everything', color: COLORS.terracotta },
   ];
   return (
     <section ref={ref} className={inView ? 'show' : ''} style={{ borderTop: `1px solid ${COLORS.border}`, borderBottom: `1px solid ${COLORS.border}`, background: COLORS.bg }}>
@@ -239,7 +239,7 @@ const Stats: React.FC = () => {
   );
 };
 
-/* ─────────────────────── How It Works ──────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ How It Works â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const HowItWorks: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   const steps = [
@@ -291,7 +291,7 @@ const HowItWorks: React.FC = () => {
   );
 };
 
-/* ─────────────────────────── Features ───────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Features: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   return (
@@ -350,7 +350,7 @@ const Features: React.FC = () => {
   );
 };
 
-/* ─────────────────────────── Demos ──────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Demos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const DemoShowcase: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   const images = Array.from({ length: 9 }, (_, i) => ({
@@ -419,7 +419,7 @@ const DemoShowcase: React.FC = () => {
   );
 };
 
-/* ─────────────────────────── Plans ──────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Plans â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Plans: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   const plans = [
@@ -456,7 +456,7 @@ const Plans: React.FC = () => {
       desc: 'Enterprise-grade features and custom branding.',
       features: [
         'Everything in Popular plan',
-        'White-label — remove Stampee branding',
+        'White-label â€” remove Stampee branding',
         'Custom domain support',
         'Dedicated account manager',
         'Priority support',
@@ -495,7 +495,7 @@ const Plans: React.FC = () => {
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {plan.features.map((f, j) => (
                   <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: COLORS.fg }}>
-                    <span style={{ color: plan.accent, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                    <span style={{ color: plan.accent, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>âœ“</span>
                     {f}
                   </li>
                 ))}
@@ -529,7 +529,7 @@ const Plans: React.FC = () => {
   );
 };
 
-/* ──────────────────────────── FAQ ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const FAQ: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   const items = [
@@ -537,7 +537,7 @@ const FAQ: React.FC = () => {
     { q: 'Do my customers need to download an app?', a: 'No. Customers access their loyalty card through a regular browser link or by scanning a QR code. No app install, no account creation needed on their end.' },
     { q: 'Can I use my own branding?', a: 'Absolutely. The card designer lets you set your business name, logo, brand colors, background images, icons, and more. Every card looks uniquely yours.' },
     { q: 'What happens if a customer loses their phone?', a: 'Each card is tied to a URL, not a device. Customers can bookmark it or it can be retrieved by your staff by searching in the Issued Cards panel.' },
-    { q: 'Can I have multiple staff members?', a: 'Yes. You can create multiple staff accounts with secure PINs. Staff can issue stamps and redeem rewards — they don\'t have access to your owner dashboard or settings.' },
+    { q: 'Can I have multiple staff members?', a: 'Yes. You can create multiple staff accounts with secure PINs. Staff can issue stamps and redeem rewards â€” they don\'t have access to your owner dashboard or settings.' },
     { q: 'Can I self-host Dima?', a: 'Yes. You can deploy Dima on your own Supabase project and Vercel account. Full control, total ownership of your data.' },
     { q: 'How do stamps work?', a: 'Staff scan a customer\'s card QR code using any phone camera. The stamp is added instantly. When the stamp goal is reached, the reward is unlocked automatically.' },
   ];
@@ -576,7 +576,7 @@ const FAQ: React.FC = () => {
   );
 };
 
-/* ──────────────────────────── CTA ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const CtaBanner: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   return (
@@ -586,7 +586,7 @@ const CtaBanner: React.FC = () => {
         Start Your Loyalty Program Today
       </h2>
       <p className="reveal reveal-delay-2" style={{ fontSize: 16, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', marginBottom: 36 }}>
-        Join small businesses using Dima to build real customer loyalty — in minutes, for free.
+        Join small businesses using Dima to build real customer loyalty â€” in minutes, for free.
       </p>
       <Link
         to="/login"
@@ -599,14 +599,14 @@ const CtaBanner: React.FC = () => {
         onMouseEnter={e => (e.currentTarget.style.background = '#b56a3a')}
         onMouseLeave={e => (e.currentTarget.style.background = COLORS.terracotta)}
       >
-        Get Started — It's Free
+        Get Started â€” It's Free
       </Link>
     </div>
   </section>
   );
 };
 
-/* ─────────────────────────── Footer ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const Footer: React.FC = () => {
   const [ref, inView] = useInView<HTMLElement>();
   return (
@@ -650,13 +650,13 @@ const Footer: React.FC = () => {
 
 
     <div className="reveal reveal-delay-6" style={{ borderTop: `1px solid ${COLORS.border}`, textAlign: 'center', padding: '20px 24px', fontSize: 12, color: COLORS.muted }}>
-      © {new Date().getFullYear()} Dima. Built for small businesses.
+      Â© {new Date().getFullYear()} Dima. Built for small businesses.
     </div>
   </footer>
   );
 };
 
-/* ────────────────────── Landing Page ────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Landing Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const LandingPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Dima | Digital Loyalty Cards for Small Businesses';

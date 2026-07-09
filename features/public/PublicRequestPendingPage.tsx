@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Spinner } from './ui/spinner';
+import { Spinner } from '@/components/ui/spinner';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export const PublicRequestPendingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -43,7 +43,6 @@ export const PublicRequestPendingPage: React.FC = () => {
         if (newStatus === 'accepted') {
           setStatus('accepted');
           setCardUniqueId(data.card_unique_id || data.accepted_card_id);
-          // Stop polling once we have a final state
           if (pollingId) clearInterval(pollingId);
           return;
         }
@@ -57,22 +56,18 @@ export const PublicRequestPendingPage: React.FC = () => {
           if (pollingId) clearInterval(pollingId);
           return;
         }
-        // Still pending
         setStatus('pending');
       } catch (err) {
         console.error('Status check error:', err);
       }
     };
 
-    // Initial check
     checkStatus().then(() => {
-      // Start polling every 3 seconds only if still pending
       pollingId = setInterval(() => {
         checkStatus();
       }, 3000);
     });
 
-    // Also try realtime as a bonus (may not work due to RLS, but polling is the fallback)
     try {
       channel = supabase
         .channel(`stamp_req_${requestId}`)
@@ -94,10 +89,8 @@ export const PublicRequestPendingPage: React.FC = () => {
         )
         .subscribe();
     } catch {
-      // Realtime may fail — polling handles it
     }
 
-    // Timeout after 15 minutes
     timeoutId = setTimeout(() => {
       setStatus('expired');
       if (pollingId) clearInterval(pollingId);
@@ -112,7 +105,6 @@ export const PublicRequestPendingPage: React.FC = () => {
     };
   }, [requestId]);
 
-  // Redirect to card when accepted
   useEffect(() => {
     if (status === 'accepted' && cardUniqueId && slug) {
       const timer = setTimeout(() => {
@@ -207,7 +199,6 @@ export const PublicRequestPendingPage: React.FC = () => {
     );
   }
 
-  // Pending state
   return (
     <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-[2rem] border border-black/[0.08] bg-white p-8 shadow-[0_24px_64px_-38px_rgba(0,0,0,0.35)] text-center">

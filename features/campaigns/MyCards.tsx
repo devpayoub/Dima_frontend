@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Template } from '../types';
-import { Button } from './ui/button';
+﻿import React, { useState, useRef, useEffect } from 'react';
+import { Template } from '@/types';
+import { Button } from '@/components/ui/button';
 import { PlusCircle, Edit2, Trash2, CreditCard, Play, QrCode, Power, Copy, ExternalLink } from 'lucide-react';
-import { LoyaltyCard } from './LoyaltyCard';
+import { LoyaltyCard } from '@/components/LoyaltyCard';
 import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
@@ -11,17 +11,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { QrCodeDisplay } from './ui/qr-code-display';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { useSubscriptionContext } from './SubscriptionContext';
-import { buildCampaignSignupUrl } from '../lib/links';
-import { useAuth } from './AuthProvider';
-import { isPremiumTier } from '../lib/utils';
-import { Alert } from './ui/alert';
-import { CampaignsSkeleton } from './skeletons/CampaignsSkeleton';
-import { useStore } from '../store/useStore';
+} from "@/components/ui/dialog";
+import { QrCodeDisplay } from '@/components/ui/qr-code-display';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useSubscriptionContext } from '@/components/SubscriptionContext';
+import { buildCampaignSignupUrl } from '@/lib/links';
+import { useAuth } from '@/components/AuthProvider';
+import { isPremiumTier } from '@/lib/utils';
+import { Alert } from '@/components/ui/alert';
+import { CampaignsSkeleton } from '@/components/skeletons/CampaignsSkeleton';
+import { useStore } from '@/store/useStore';
 
 interface MyCardsProps {
   cards: Template[];

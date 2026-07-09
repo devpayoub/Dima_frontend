@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+﻿import React, { useEffect, useState, useMemo } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
     Calendar, History,
     Gift, Plus, Minus, CreditCard, ArrowUpDown, Download, RefreshCw
 } from "lucide-react";
-import { SearchInput } from "./ui/search-input";
-import { Customer, Transaction } from '../types';
-import { cn } from '../lib/utils';
-import { Button } from './ui/button';
-import { getTransactionMeta } from '../lib/format';
-import { TransactionsSkeleton } from './skeletons/TransactionsSkeleton';
-import { PaginationBar } from './ui/pagination';
+import { SearchInput } from "@/components/ui/search-input";
+import { Customer, Transaction } from '@/types';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { getTransactionMeta } from '@/lib/format';
+import { TransactionsSkeleton } from '@/components/skeletons/TransactionsSkeleton';
+import { PaginationBar } from '@/components/ui/pagination';
 
 interface TransactionsPageProps {
   customers: Customer[];
@@ -31,8 +31,8 @@ const escapeCsvValue = (value: string | number | undefined) => {
     return `"${normalized.replace(/"/g, '""')}"`;
 };
 
-import { useStore } from '../store/useStore';
-import { useAuth } from './AuthProvider';
+import { useStore } from '@/store/useStore';
+import { useAuth } from '@/components/AuthProvider';
 
 export const TransactionsPage: React.FC = () => {
   const { customers, refreshData, dataReady } = useStore();

@@ -50,3 +50,38 @@ export function isPremiumTier(tier?: string): boolean {
   if (!tier) return false;
   return PREMIUM_TIERS.includes(tier.toLowerCase());
 }
+
+export function normalizeHexColor(value: string): string {
+  const normalized = value.replace('#', '').trim();
+  if (normalized.length === 3) {
+    return `#${normalized.split('').map((char) => `${char}${char}`).join('')}`;
+  }
+  if (normalized.length === 6) {
+    return `#${normalized}`;
+  }
+  return '#ffffff';
+}
+
+export function mixHexColors(base: string, target: string, weight: number): string {
+  const source = normalizeHexColor(base);
+  const destination = normalizeHexColor(target);
+  const ratio = Math.min(1, Math.max(0, weight));
+  const parseChannel = (hex: string, start: number) => Number.parseInt(hex.slice(start, start + 2), 16);
+  const blendChannel = (from: number, to: number) => Math.round(from + (to - from) * ratio);
+
+  const r = blendChannel(parseChannel(source, 1), parseChannel(destination, 1));
+  const g = blendChannel(parseChannel(source, 3), parseChannel(destination, 3));
+  const b = blendChannel(parseChannel(source, 5), parseChannel(destination, 5));
+
+  return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
+
+export function getHexLuminance(value: string): number {
+  const normalized = normalizeHexColor(value);
+  const channels = [1, 3, 5].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16) / 255);
+  const [r, g, b] = channels.map((channel) => (
+    channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4)
+  ));
+
+  return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+}

@@ -1,20 +1,20 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+﻿import React, { useState, useMemo, useEffect } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Mail, Phone, Edit, UserPlus, RefreshCw } from "lucide-react";
-import { SearchInput } from "./ui/search-input";
-import { AvatarInitials } from "./ui/avatar-initials";
-import { Customer } from '../types';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Label } from "./ui/label";
-import { upsertCustomer } from '../lib/db/customers';
-import { useAuth } from './AuthProvider';
-import { Alert } from './ui/alert';
-import { PaginationBar } from './ui/pagination';
-import { CustomersSkeleton } from './skeletons/CustomersSkeleton';
+import { SearchInput } from "@/components/ui/search-input";
+import { AvatarInitials } from "@/components/ui/avatar-initials";
+import { Customer } from '@/types';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { upsertCustomer } from '@/lib/db/customers';
+import { useAuth } from '@/components/AuthProvider';
+import { Alert } from '@/components/ui/alert';
+import { PaginationBar } from '@/components/ui/pagination';
+import { CustomersSkeleton } from '@/components/skeletons/CustomersSkeleton';
 
-import { useStore } from '../store/useStore';
+import { useStore } from '@/store/useStore';
 
 interface CustomerDirectoryProps {
   readOnly?: boolean;

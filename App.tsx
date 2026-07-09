@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+﻿import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { Sidebar, NAV_ITEMS, SidebarContent } from './components/Sidebar';
 import { Template, Customer, IssuedCard } from './types';
@@ -7,10 +7,10 @@ import { templates } from './data/templates';
 import { BrowserRouter, Routes, Route, Outlet, useParams, useNavigate, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { toStoredTemplate, fromStoredTemplate } from './lib/templateSerialization';
-import { cn, hexToRgba, resolveHexAndOpacity } from './lib/utils';
+import { cn, hexToRgba, resolveHexAndOpacity, normalizeHexColor, mixHexColors, getHexLuminance } from './lib/utils';
 import { AuthProvider, useAuth } from './components/AuthProvider';
 import { RequireAuth } from './components/RequireAuth';
-import { TemplatesGallery } from './components/TemplatesGallery';
+import { TemplatesGallery } from './features/campaigns/TemplatesGallery';
 import { RequireRole } from './components/RequireRole';
 import { RequireTier } from './components/RequireTier';
 import { VerifyBanner } from './components/VerifyBanner';
@@ -37,58 +37,23 @@ type SeoConfig = {
   type?: 'website' | 'article';
 };
 
-const normalizeHexColor = (value: string) => {
-  const normalized = value.replace('#', '').trim();
-  if (normalized.length === 3) {
-    return `#${normalized.split('').map((char) => `${char}${char}`).join('')}`;
-  }
-  if (normalized.length === 6) {
-    return `#${normalized}`;
-  }
-  return '#ffffff';
-};
-
-const mixHexColors = (base: string, target: string, weight: number) => {
-  const source = normalizeHexColor(base);
-  const destination = normalizeHexColor(target);
-  const ratio = Math.min(1, Math.max(0, weight));
-  const parseChannel = (hex: string, start: number) => Number.parseInt(hex.slice(start, start + 2), 16);
-  const blendChannel = (from: number, to: number) => Math.round(from + (to - from) * ratio);
-
-  const r = blendChannel(parseChannel(source, 1), parseChannel(destination, 1));
-  const g = blendChannel(parseChannel(source, 3), parseChannel(destination, 3));
-  const b = blendChannel(parseChannel(source, 5), parseChannel(destination, 5));
-
-  return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-};
-
-const getHexLuminance = (value: string) => {
-  const normalized = normalizeHexColor(value);
-  const channels = [1, 3, 5].map((start) => Number.parseInt(normalized.slice(start, start + 2), 16) / 255);
-  const [r, g, b] = channels.map((channel) => (
-    channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4)
-  ));
-
-  return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
-};
-
 const LoyaltyCard = lazy(() => import('./components/LoyaltyCard').then((module) => ({ default: module.LoyaltyCard })));
-const CardEditor = lazy(() => import('./components/CardEditor').then((module) => ({ default: module.CardEditor })));
-const MyCards = lazy(() => import('./components/MyCards').then((module) => ({ default: module.MyCards })));
-const IssuedCardsPage = lazy(() => import('./components/IssuedCardsPage').then((module) => ({ default: module.IssuedCardsPage })));
-const CustomerDirectory = lazy(() => import('./components/CustomerDirectory').then((module) => ({ default: module.CustomerDirectory })));
-const TransactionsPage = lazy(() => import('./components/TransactionsPage').then((module) => ({ default: module.TransactionsPage })));
-const AnalyticsPage = lazy(() => import('./components/AnalyticsPage').then((module) => ({ default: module.AnalyticsPage })));
-const LoginPage = lazy(() => import('./components/LoginPage').then((module) => ({ default: module.LoginPage })));
-const StaffLoginPage = lazy(() => import('./components/StaffLoginPage').then((module) => ({ default: module.StaffLoginPage })));
-const SettingsPage = lazy(() => import('./components/SettingsPage').then((module) => ({ default: module.SettingsPage })));
-const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
-const DashboardPage = lazy(() => import('./components/DashboardPage').then((module) => ({ default: module.DashboardPage })));
-const RequestsPage = lazy(() => import('./components/RequestsPage').then((module) => ({ default: module.RequestsPage })));
-const PublicCampaignSignupPage = lazy(() => import('./components/PublicCampaignSignupPage').then((module) => ({ default: module.PublicCampaignSignupPage })));
-const PublicRequestPendingPage = lazy(() => import('./components/PublicRequestPendingPage').then((module) => ({ default: module.PublicRequestPendingPage })));
-const LandingPage = lazy(() => import('./components/LandingPage'));
-const ContactPage = lazy(() => import('./components/ContactPage'));
+const CardEditor = lazy(() => import('./features/campaigns/CardEditor').then((module) => ({ default: module.CardEditor })));
+const MyCards = lazy(() => import('./features/campaigns/MyCards').then((module) => ({ default: module.MyCards })));
+const IssuedCardsPage = lazy(() => import('./features/cards/IssuedCardsPage').then((module) => ({ default: module.IssuedCardsPage })));
+const CustomerDirectory = lazy(() => import('./features/customers/CustomerDirectory').then((module) => ({ default: module.CustomerDirectory })));
+const TransactionsPage = lazy(() => import('./features/transactions/TransactionsPage').then((module) => ({ default: module.TransactionsPage })));
+const AnalyticsPage = lazy(() => import('./features/analytics/AnalyticsPage').then((module) => ({ default: module.AnalyticsPage })));
+const LoginPage = lazy(() => import('./features/auth/LoginPage').then((module) => ({ default: module.LoginPage })));
+const StaffLoginPage = lazy(() => import('./features/auth/StaffLoginPage').then((module) => ({ default: module.StaffLoginPage })));
+const SettingsPage = lazy(() => import('./features/settings/SettingsPage').then((module) => ({ default: module.SettingsPage })));
+const ForgotPasswordPage = lazy(() => import('./features/auth/ForgotPasswordPage').then((module) => ({ default: module.ForgotPasswordPage })));
+const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').then((module) => ({ default: module.DashboardPage })));
+const RequestsPage = lazy(() => import('./features/requests/RequestsPage').then((module) => ({ default: module.RequestsPage })));
+const PublicCampaignSignupPage = lazy(() => import('./features/public/PublicCampaignSignupPage').then((module) => ({ default: module.PublicCampaignSignupPage })));
+const PublicRequestPendingPage = lazy(() => import('./features/public/PublicRequestPendingPage').then((module) => ({ default: module.PublicRequestPendingPage })));
+const LandingPage = lazy(() => import('./features/public/LandingPage'));
+const ContactPage = lazy(() => import('./features/public/ContactPage'));
 
 const RouteLoader: React.FC = () => (
   <div className="flex min-h-[40vh] w-full items-center justify-center">

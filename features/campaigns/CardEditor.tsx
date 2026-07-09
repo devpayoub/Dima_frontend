@@ -1,19 +1,19 @@
-import React, { useRef, useState } from 'react';
-import { Template } from '../types';
-import { LoyaltyCard } from './LoyaltyCard';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Switch } from './ui/switch';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
-import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+﻿import React, { useRef, useState } from 'react';
+import { Template } from '@/types';
+import { LoyaltyCard } from '@/components/LoyaltyCard';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ArrowLeft, Check as CheckIcon, Smartphone, Image as ImageIcon, Type, Palette, Grid, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ICON_OPTIONS } from '../lib/iconRegistry';
-import { useAuth } from './AuthProvider';
-import { deleteCampaignAssetByUrl, type CampaignAssetKind, uploadCampaignAsset } from '../lib/storage/campaignAssets';
-import { Alert } from './ui/alert';
+import { ICON_OPTIONS } from '@/lib/iconRegistry';
+import { useAuth } from '@/components/AuthProvider';
+import { deleteCampaignAssetByUrl, type CampaignAssetKind, uploadCampaignAsset } from '@/lib/storage/campaignAssets';
+import { Alert } from '@/components/ui/alert';
 
 interface CardEditorProps {
   initialTemplate: Template;

@@ -31,7 +31,7 @@ const THEME_CONFIG = {
       { label: "Setup time", value: "3 min" },
       { label: "Staff onboarded", value: "5k+" },
     ],
-    quote: "Brand profile, loyalty cards, and analytics — everything in one place, ready in minutes.",
+    quote: "Brand profile, loyalty cards, and analytics \u2014 everything in one place, ready in minutes.",
     features: ["Brand profile", "Loyalty cards", "Analytics"],
     navLinkLabel: "Log in",
     navLinkTo: "/login",
@@ -44,7 +44,7 @@ const THEME_CONFIG = {
       { label: "Scans today", value: "30k+" },
       { label: "Avg issue time", value: "12 sec" },
     ],
-    quote: "Stamp cards fast and accurately — no paper, no hassle, just seamless service.",
+    quote: "Stamp cards fast and accurately \u2014 no paper, no hassle, just seamless service.",
     features: [] as string[],
     navLinkLabel: "Owner login",
     navLinkTo: "/login",
@@ -70,7 +70,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
         .auth-c { animation: auth-a 9s ease-in-out infinite 4.5s; }
       `}</style>
 
-      {/* Ambient blobs — fixed so they don't scroll */}
+      {/* Ambient blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className={`auth-a absolute -left-40 -top-40 h-[650px] w-[650px] rounded-full blur-[130px] ${t.blobA}`} />
         <div className={`auth-b absolute -bottom-40 -right-20 h-[550px] w-[550px] rounded-full blur-[110px] ${t.blobB}`} />
@@ -95,7 +95,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
       {/* Page grid */}
       <div className="relative z-10 mx-auto grid min-h-screen max-w-5xl grid-cols-1 items-center gap-10 px-6 pb-12 pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-12 lg:pt-24">
 
-        {/* ── Left: marketing panel (desktop only) ── */}
+        {/* Left: marketing panel (desktop only) */}
         <section className="hidden flex-col justify-center space-y-8 lg:flex">
           {badge && (
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">{badge}</p>
@@ -138,7 +138,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
           )}
         </section>
 
-        {/* ── Right: form card ── */}
+        {/* Right: form card */}
         <section className="w-full">
           <div className="mx-auto max-w-[440px] rounded-3xl border border-black/[0.07] bg-white p-5 shadow-[0_8px_48px_rgba(0,0,0,0.07)] sm:p-8 lg:mx-0 lg:max-w-none lg:p-8">
             {children}

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Alert } from "./ui/alert";
-import { Label } from "./ui/label";
-import { useAuth } from "./AuthProvider";
-import { buildStaffPortalUrl } from "../lib/links";
+﻿import React, { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Alert } from "@/components/ui/alert";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/components/AuthProvider";
+import { buildStaffPortalUrl } from "@/lib/links";
 import { useNavigate } from "react-router-dom";
-import { useSubscriptionContext } from "./SubscriptionContext";
+import { useSubscriptionContext } from "@/components/SubscriptionContext";
 
 const DELETE_CONFIRMATION = "DELETE";
 
@@ -239,7 +239,7 @@ export const SettingsPage: React.FC = () => {
                 type="password"
                 value={passwordForm.next}
                 onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 required
               />
             </div>
@@ -249,7 +249,7 @@ export const SettingsPage: React.FC = () => {
                 type="password"
                 value={passwordForm.confirm}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 required
               />
             </div>
@@ -341,7 +341,7 @@ export const SettingsPage: React.FC = () => {
 
         {staffActionError && <Alert variant="error">{staffActionError}</Alert>}
 
-        {/* Staff table — desktop */}
+        {/* Staff table â€” desktop */}
         <div className="hidden md:block rounded-2xl border border-slate-100 overflow-hidden">
           <div className="grid grid-cols-[1.2fr_1.4fr_0.8fr_auto] gap-4 px-4 py-3 text-xs uppercase tracking-wider text-muted-foreground bg-slate-50">
             <span>Name</span>
@@ -409,7 +409,7 @@ export const SettingsPage: React.FC = () => {
           )}
         </div>
 
-        {/* Staff list — mobile cards */}
+        {/* Staff list â€” mobile cards */}
         <div className="md:hidden space-y-3">
           {staffAccounts.length === 0 ? (
             <div className="rounded-2xl border border-slate-100 px-4 py-6 text-sm text-muted-foreground">

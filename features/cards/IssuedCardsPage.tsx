@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -6,11 +6,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,22 +26,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { 
     MoreHorizontal, Plus, Trash, Edit, Phone, Mail, Stamp, 
     CreditCard, Minus, Gift, ExternalLink, ArrowLeft, UserPlus, 
     CheckCircle2, User, ChevronRight 
 } from "lucide-react";
-import { SearchInput } from "./ui/search-input";
-import { AvatarInitials } from "./ui/avatar-initials";
-import { cn } from "../lib/utils";
-import { Customer, Template, IssuedCard, Transaction } from '../types';
-import { IssueCardDialog } from './IssueCardDialog';
-import { useAuth } from './AuthProvider';
-import { buildPublicCardUrl } from '../lib/links';
-import { PaginationBar } from './ui/pagination';
-import { resolveCardTemplate } from '../lib/templateSerialization';
-import { todayISO, createTransaction } from '../lib/transactionHelpers';
+import { SearchInput } from "@/components/ui/search-input";
+import { AvatarInitials } from "@/components/ui/avatar-initials";
+import { cn } from "@/lib/utils";
+import { Customer, Template, IssuedCard, Transaction } from '@/types';
+import { IssueCardDialog } from '@/components/IssueCardDialog';
+import { useAuth } from '@/components/AuthProvider';
+import { buildPublicCardUrl } from '@/lib/links';
+import { PaginationBar } from '@/components/ui/pagination';
+import { resolveCardTemplate } from '@/lib/templateSerialization';
+import { todayISO, createTransaction } from '@/lib/transactionHelpers';
 
 interface IssuedCardsPageProps {
   customers: Customer[];
@@ -61,7 +61,7 @@ const formatPhoneNumber = (value: string) => {
   return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
 };
 
-import { useStore } from '../store/useStore';
+import { useStore } from '@/store/useStore';
 
 export const IssuedCardsPage: React.FC = () => {
   const { campaigns, customers, updateCustomerStateLocally: setCustomers, refreshData, dataReady } = useStore();
@@ -550,7 +550,7 @@ export const IssuedCardsPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">New Balance</p>
                     <div className="text-4xl font-bold flex items-center justify-center gap-3">
                          <span className="text-muted-foreground/30">{activeCard?.stamps}</span>
-                         <span className="text-muted-foreground/30">→</span>
+                         <span className="text-muted-foreground/30">â†’</span>
                          <span className="text-primary">{activeCard ? activeCard.stamps + 1 : 0}</span>
                     </div>
                 </div>

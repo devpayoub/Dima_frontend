@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Customer, IssuedCard, Template, Transaction } from "../types";
-import { resolveCardTemplate } from "../lib/templateSerialization";
-import { formatNumber } from "../lib/format";
+﻿import React, { useMemo, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Customer, IssuedCard, Template, Transaction } from "@/types";
+import { resolveCardTemplate } from "@/lib/templateSerialization";
+import { formatNumber } from "@/lib/format";
 import {
   Activity,
   BadgeCheck,
@@ -15,7 +15,7 @@ import {
   Users,
   TrendingUp
 } from "lucide-react";
-import { AnalyticsSkeleton } from "./skeletons/AnalyticsSkeleton";
+import { AnalyticsSkeleton } from "@/components/skeletons/AnalyticsSkeleton";
 
 interface AnalyticsPageProps {
   customers: Customer[];
@@ -84,7 +84,7 @@ const formatDateRangeLabel = (startDate: string, endDate: string) => {
   return `${startLabel} - ${endLabel}`;
 };
 
-import { useStore } from '../store/useStore';
+import { useStore } from '@/store/useStore';
 
 export const AnalyticsPage: React.FC = () => {
   const { campaigns, customers, dataReady } = useStore();

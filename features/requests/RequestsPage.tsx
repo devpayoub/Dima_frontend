@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
-import { getStampRequests, acceptStampRequest, declineStampRequest, StampRequest } from '../lib/api/stampRequests';
-import { supabase } from '../lib/supabase';
-import { useAuth } from './AuthProvider';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { AvatarInitials } from "./ui/avatar-initials";
-import { SearchInput } from "./ui/search-input";
-import { PaginationBar } from './ui/pagination';
+﻿import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { getStampRequests, acceptStampRequest, declineStampRequest, StampRequest } from '@/lib/api/stampRequests';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/components/AuthProvider';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { AvatarInitials } from "@/components/ui/avatar-initials";
+import { SearchInput } from "@/components/ui/search-input";
+import { PaginationBar } from '@/components/ui/pagination';
 import { CheckCircle2, XCircle, Clock, RefreshCw } from "lucide-react";
 
 const PAGE_SIZE = 8;
@@ -46,7 +46,7 @@ export const RequestsPage: React.FC = () => {
       const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setRequests(sorted);
     } catch {
-      // silent — ignore errors on background refresh
+      // silent â€” ignore errors on background refresh
     } finally {
       loadingRef.current = false;
     }

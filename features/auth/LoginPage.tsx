@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { AuthLayout } from "./AuthLayout";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Alert } from "./ui/alert";
-import { useAuth } from "./AuthProvider";
-import { trackEvent } from "../lib/analytics";
-import { DEMO_WORKSPACE_ENABLED } from "../lib/siteConfig";
+import { AuthSplitLayout } from "./AuthSplitLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert } from "@/components/ui/alert";
+import { useAuth } from "@/components/AuthProvider";
+import type { AuthResult } from "@/components/AuthProvider";
+import { trackEvent } from "@/lib/analytics";
+import { DEMO_WORKSPACE_ENABLED } from "@/lib/siteConfig";
 
 const inputCls =
-  "h-12 rounded-xl border-black/[0.1] bg-[#f5f5f7] text-[#1d1d1f] placeholder:text-[#6e6e73]/50 focus-visible:border-[#1d1d1f] focus-visible:ring-0";
-const labelCls = "block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6e6e73]";
+  "h-14 rounded-[1.2rem] border border-black/[0.08] bg-[#f4f1ea] px-4 text-[15px] text-[#171512] shadow-none placeholder:text-[#8a8276] focus-visible:border-black/25 focus-visible:bg-white focus-visible:ring-0";
+const labelCls = "block text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#777062]";
 
-export const LoginClassicPage: React.FC = () => {
+export const LoginPage: React.FC = () => {
   const { currentUser, loading, login, loginDemo } = useAuth();
   const location = useLocation();
   const fromPath = (location.state as { from?: { pathname?: string } })?.from?.pathname;
@@ -40,6 +41,7 @@ export const LoginClassicPage: React.FC = () => {
         });
     });
 
+  // Once auth state is resolved and user is logged in, redirect
   if (!loading && currentUser) {
     return <Navigate to={fromPath ?? (currentUser.role === "staff" ? "/issued-cards" : "/dashboard")} replace />;
   }
@@ -49,8 +51,8 @@ export const LoginClassicPage: React.FC = () => {
     setError("");
     setBusy(true);
     try {
-      const result = await withTimeout<any>(login(email, password));
-      if (!result.ok) {
+      const result = await withTimeout<AuthResult>(login(email, password));
+      if ("error" in result) {
         setError(result.error);
       } else {
         trackEvent("Login Success", { role: result.user?.role ?? "owner" });
@@ -60,6 +62,7 @@ export const LoginClassicPage: React.FC = () => {
     } finally {
       setBusy(false);
     }
+    // Redirect is handled automatically when currentUser becomes set
   };
 
   const handleDemo = async () => {
@@ -78,17 +81,16 @@ export const LoginClassicPage: React.FC = () => {
   const isDisabled = busy || loading;
 
   return (
-    <AuthLayout
-      title="Welcome back."
-      subtitle="Manage campaigns, issue stamps, and track loyalty performance in real time."
+    <AuthSplitLayout
+      title="Welcome back"
+      subtitle="Log in to run campaigns, issue digital cards, and track loyalty activity from one place."
       badge="Sign in"
-      theme="login"
+      mode="login"
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="mb-2">
-          <h2 className="text-xl font-semibold text-[#1d1d1f]">Sign in to your account</h2>
-          <p className="mt-1 text-sm text-[#6e6e73]">Enter your credentials below to continue.</p>
-        </div>
+        <p className="text-sm leading-6 text-[#6d6658]">
+          Owner access only. Staff members should continue using their dedicated portal link and PIN.
+        </p>
 
         <div className="space-y-1.5">
           <label className={labelCls}>Email</label>
@@ -129,19 +131,19 @@ export const LoginClassicPage: React.FC = () => {
         <Button
           type="submit"
           disabled={isDisabled}
-          className="h-12 w-full rounded-full bg-[#1d1d1f] text-base font-medium text-white shadow-sm hover:bg-black/80"
+          className="h-14 w-full rounded-[1.2rem] bg-[#1b1813] text-base font-semibold text-white shadow-none hover:bg-[#11100d] disabled:opacity-60"
         >
           {isSubmitting ? "Signing in..." : <>Continue <ArrowRight className="ml-2 h-4 w-4" /></>}
         </Button>
         {loading && !busy && (
-          <p className="text-center text-xs text-[#6e6e73]">Checking existing session...</p>
+          <p className="text-center text-xs text-[#777062]">Checking existing session...</p>
         )}
 
         {showDemoWorkspace && (
           <>
             <div className="relative py-1">
               <div className="border-t border-black/[0.08]" />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#6e6e73]">
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#777062]">
                 or
               </span>
             </div>
@@ -150,21 +152,14 @@ export const LoginClassicPage: React.FC = () => {
               type="button"
               variant="outline"
               disabled={isDisabled}
-              className="h-12 w-full rounded-full border-black/[0.1] bg-white text-base font-medium text-[#1d1d1f] hover:bg-[#f5f5f7]"
+              className="h-14 w-full rounded-[1.2rem] border-black/[0.08] bg-white text-base font-semibold text-[#171512] shadow-none hover:bg-[#f8f5ef]"
               onClick={handleDemo}
             >
               Try Demo Workspace
             </Button>
           </>
         )}
-
-        <p className="text-center text-sm text-[#6e6e73]">
-          New here?{" "}
-          <Link to="/signup" className="font-semibold text-[#1d1d1f] underline-offset-2 hover:underline">
-            Create your workspace
-          </Link>
-        </p>
       </form>
-    </AuthLayout>
+    </AuthSplitLayout>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -11,16 +11,16 @@ import {
   Users,
   Wallet,
 } from 'lucide-react';
-import { Customer, Template, Transaction, TIER_LIMITS } from '../types';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { useAuth } from './AuthProvider';
-import { loadFromStorage, saveToStorage } from '../lib/storage';
-import { cn, isPremiumTier } from '../lib/utils';
-import { formatAction, formatTimestamp } from '../lib/format';
-import { DashboardSkeleton } from './skeletons/DashboardSkeleton';
-import { useStore } from '../store/useStore';
+import { Customer, Template, Transaction, TIER_LIMITS } from '@/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/components/AuthProvider';
+import { loadFromStorage, saveToStorage } from '@/lib/storage';
+import { cn, isPremiumTier } from '@/lib/utils';
+import { formatAction, formatTimestamp } from '@/lib/format';
+import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { useStore } from '@/store/useStore';
 
 interface ActivityItem extends Transaction {
   customerName: string;
