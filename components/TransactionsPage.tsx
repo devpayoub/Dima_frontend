@@ -10,6 +10,7 @@ import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { getTransactionMeta } from '../lib/format';
 import { TransactionsSkeleton } from './skeletons/TransactionsSkeleton';
+import { PaginationBar } from './ui/pagination';
 
 interface TransactionsPageProps {
   customers: Customer[];
@@ -31,16 +32,13 @@ const escapeCsvValue = (value: string | number | undefined) => {
 };
 
 export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, refreshData, dataReady = false }) => {
-  if (!dataReady) return <TransactionsSkeleton />;
-
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 8;
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(1);
   const [refreshBusy, setRefreshBusy] = useState(false);
 
-  // 1. Flatten Data
   const allTransactions: FlatTransaction[] = useMemo(() => {
       return customers.flatMap(customer => 
           customer.cards.flatMap(card => 
@@ -59,7 +57,6 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
       });
   }, [customers, sortOrder]);
 
-  // 2. Filter Data
   const filteredTransactions = useMemo(() => {
       return allTransactions.filter(tx => {
           const lowerQuery = searchQuery.toLowerCase();
@@ -68,27 +65,25 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
               tx.campaignName.toLowerCase().includes(lowerQuery) ||
               tx.cardId.toLowerCase().includes(lowerQuery) ||
               (tx.remarks && tx.remarks.toLowerCase().includes(lowerQuery));
-
           const matchesDate = dateFilter 
               ? new Date(tx.timestamp).toLocaleDateString() === new Date(dateFilter).toLocaleDateString()
               : true;
-
           return matchesSearch && matchesDate;
       });
   }, [allTransactions, searchQuery, dateFilter]);
 
   useEffect(() => {
-      setVisibleCount(PAGE_SIZE);
+      setCurrentPage(1);
   }, [customers, searchQuery, dateFilter, sortOrder]);
 
-  const visibleTransactions = useMemo(() => {
-      return filteredTransactions.slice(0, visibleCount);
-  }, [filteredTransactions, visibleCount]);
+  const totalPages = Math.ceil(filteredTransactions.length / PAGE_SIZE);
+  const pagedData = useMemo(() => {
+      return filteredTransactions.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  }, [filteredTransactions, currentPage]);
 
-  const hasMoreTransactions = filteredTransactions.length > visibleCount;
+  if (!dataReady) return <TransactionsSkeleton />;
 
   const toggleSort = () => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
-  const handleLoadMore = () => setVisibleCount((prev) => prev + PAGE_SIZE);
 
   const handleExportCsv = () => {
       const headers = [
@@ -179,7 +174,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
                 )}
             </div>
 
-             <div className="ml-auto flex items-center gap-2">
+             <div className="flex flex-wrap items-center gap-2 ml-auto">
                  {refreshData && (
                    <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="gap-2">
                      <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
@@ -202,9 +197,51 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
             </div>
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border bg-white flex-1 overflow-auto shadow-sm">
-            <Table>
+        <div className="flex-1 flex flex-col justify-between rounded-xl border bg-white shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+                <div className="md:hidden space-y-3 p-3">
+                    {pagedData.length === 0 ? (
+                        <div className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
+                            <History size={24} className="opacity-20" />
+                            No transactions found matching your filters.
+                        </div>
+                    ) : (
+                        pagedData.map(tx => (
+                            <div key={tx.id} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <div className="font-semibold text-foreground text-sm">{tx.customerName}</div>
+                                        <div className="text-xs text-muted-foreground">{tx.customerEmail}</div>
+                                    </div>
+                                    <div className={cn(
+                                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border shrink-0",
+                                        getTransactionMeta(tx.type).color
+                                    )}>
+                                        {renderIcon(tx.type)}
+                                        {getTransactionMeta(tx.type).label}
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <div>
+                                        <span className="font-medium text-sm">{tx.campaignName}</span>
+                                        <span className="text-[10px] font-mono text-muted-foreground bg-gray-100 ml-2 px-1.5 py-0.5 rounded">#{tx.cardId.slice(0, 8)}</span>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground flex justify-between items-center">
+                                        <span>{tx.date}</span>
+                                        <span>By {tx.actorName || "Owner"}</span>
+                                    </div>
+                                    {tx.remarks && (
+                                        <div className="mt-1 text-xs italic text-muted-foreground bg-gray-50 p-2 rounded">
+                                            "{tx.remarks}"
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+                <div className="hidden md:block">
+                <Table>
                 <TableHeader>
                     <TableRow className="bg-muted/30">
                         <TableHead className="w-[180px]">Date & Time</TableHead>
@@ -216,7 +253,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filteredTransactions.length === 0 ? (
+                    {                        pagedData.length === 0 ? (
                         <TableRow>
                             <TableCell colSpan={6} className="text-center h-32 text-muted-foreground flex-col gap-2">
                                 <div className="flex justify-center mb-2"><History size={24} className="opacity-20"/></div>
@@ -224,7 +261,7 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
                             </TableCell>
                         </TableRow>
                     ) : (
-                        visibleTransactions.map(tx => (
+                        pagedData.map(tx => (
                             <TableRow key={tx.id} className="hover:bg-muted/30 transition-colors">
                                 <TableCell className="font-mono text-xs text-muted-foreground">
                                     <div className="font-medium text-foreground">{tx.date.split(',')[0]}</div>
@@ -269,16 +306,11 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
                     )}
                 </TableBody>
             </Table>
-        </div>
-        <div className="flex flex-col items-center gap-3">
-            <div className="text-xs text-muted-foreground text-center">
-                Showing {visibleTransactions.length} of {filteredTransactions.length} transaction{filteredTransactions.length !== 1 && 's'}
             </div>
-            {hasMoreTransactions && (
-                <Button variant="outline" size="sm" onClick={handleLoadMore}>
-                    Load more
-                </Button>
-            )}
+            </div>
+            <div className="border-t p-4 bg-gray-50/50">
+                <PaginationBar currentPage={currentPage} totalPages={totalPages} totalItems={filteredTransactions.length} onPageChange={setCurrentPage} />
+            </div>
         </div>
     </div>
   );

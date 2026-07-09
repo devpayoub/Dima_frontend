@@ -463,6 +463,7 @@ const PreviewWrapper: React.FC = () => {
 const EditorWrapper: React.FC<{ onSave: (t: Template) => Promise<void>; templates: Template[] }> = ({ onSave, templates: createdTemplates }) => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
+  const { currentOwner } = useAuth();
 
   let initialTemplate: Template | undefined;
 
@@ -481,11 +482,14 @@ const EditorWrapper: React.FC<{ onSave: (t: Template) => Promise<void>; template
 
   if (!initialTemplate) return <Navigate to="/campaigns" />;
 
+  const allowFullDesign = currentOwner?.tier === 'premium' || currentOwner?.tier === 'pro' || currentOwner?.tier === 'premier';
+
   return (
     withSuspense(
       <CardEditor
         initialTemplate={initialTemplate}
         onSave={onSave}
+        allowFullDesign={allowFullDesign}
       />
     )
   );

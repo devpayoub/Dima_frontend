@@ -1,50 +1,52 @@
-import { type ClassValue, clsx } from "clsx"
+import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function extractHex(cls: string | undefined): string | null {
-  if (!cls) return null;
-  // Matches arbitrary hex color usage like bg-[#123456] or text-[#123456]
-  const hexMatch = cls.match(/#(?:[0-9a-fA-F]{3}){1,2}/);
-  return hexMatch ? hexMatch[0] : null;
-}
-
-export function extractIntensity(cls: string | undefined): number {
-  if (!cls) return 100;
-  // Matches opacity modifier like .../50
-  if (cls.includes('/')) {
-      const parts = cls.split('/');
-      const val = parseInt(parts[1]);
-      return isNaN(val) ? 100 : val;
+export function extractHex(value: string): string | null {
+  const hexMatch = value.match(/#([0-9a-fA-F]{3,8})\b/);
+  if (hexMatch) {
+    let hex = hexMatch[1];
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length === 6) return `#${hex}`;
+    if (hex.length === 8) return `#${hex.slice(0, 6)}`;
   }
-  return 100;
-}
-
-export function hexToRgba(hex: string, opacity: number): string {
-  const normalized = hex.replace('#', '');
-  const bigint = parseInt(normalized.length === 3
-    ? normalized.split('').map((c) => c + c).join('')
-    : normalized, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
-
-export function resolveHexAndOpacity(cls: string | undefined, fallback = '#000000') {
-  let hex = extractHex(cls);
-  if (!hex && cls) {
-    if (cls.includes('white')) hex = '#ffffff';
-    if (cls.includes('black')) hex = '#000000';
+  const rgbMatch = value.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (rgbMatch) {
+    const [, r, g, b] = rgbMatch;
+    return `#${[r, g, b].map(x => Number(x).toString(16).padStart(2, '0')).join('')}`;
   }
-  if (!hex) hex = fallback;
-  const opacity = extractIntensity(cls) / 100;
-  return { hex, opacity };
+  return null;
 }
+
+export function extractIntensity(value?: string): number | null {
+  if (!value) return null;
+  const alphaMatch = value.match(/rgba?\([^,]+,\s*([\d.]+)\)/);
+  if (alphaMatch) return Math.round(parseFloat(alphaMatch[1]) * 100);
+  return null;
+}
+
+export function hexToRgba(hex: string, alpha: number = 1): string {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export function resolveHexAndOpacity(value?: string): { hex: string; opacity: number } | null {
+  if (!value) return null;
+  const hex = extractHex(value);
+  if (!hex) return null;
+  const intensity = extractIntensity(value);
+  return { hex, opacity: intensity ?? 100 };
+}
+
+const PREMIUM_TIERS = ['premium', 'business', 'enterprise'];
 
 export function isPremiumTier(tier?: string): boolean {
-  return tier === 'premium' || tier === 'pro';
+  if (!tier) return false;
+  return PREMIUM_TIERS.includes(tier.toLowerCase());
 }

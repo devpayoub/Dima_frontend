@@ -18,6 +18,7 @@ import { Alert } from './ui/alert';
 interface CardEditorProps {
   initialTemplate: Template;
   onSave: (template: Template) => Promise<void>;
+  allowFullDesign?: boolean;
 }
 
 type PalettePreset = {
@@ -353,7 +354,7 @@ const normalizeHex = (value?: string) => (value ?? '').trim().toLowerCase();
 const LOGO_FILE_ACCEPT = '.jpg,.jpeg,.png,.webp,.svg,image/jpeg,image/png,image/webp,image/svg+xml';
 const BACKGROUND_FILE_ACCEPT = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
 
-export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave }) => {
+export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave, allowFullDesign = true }) => {
   const navigate = useNavigate();
   const { currentOwner } = useAuth();
   const [template, setTemplate] = useState<Template>(initialTemplate);
@@ -797,8 +798,10 @@ export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave 
                     </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="design">
-                    <AccordionTrigger>
+                {allowFullDesign && (
+                  <>
+                    <AccordionItem value="design">
+                        <AccordionTrigger>
                         <span className="flex items-center gap-2"><Palette size={16}/> Design & Colors</span>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-6 pt-2">
@@ -1146,6 +1149,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({ initialTemplate, onSave 
                         </div>
                     </AccordionContent>
                 </AccordionItem>
+                  </>
+                )}
             </Accordion>
         </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -39,6 +39,7 @@ import { Customer, Template, IssuedCard, Transaction } from '../types';
 import { IssueCardDialog } from './IssueCardDialog';
 import { useAuth } from './AuthProvider';
 import { buildPublicCardUrl } from '../lib/links';
+import { PaginationBar } from './ui/pagination';
 import { resolveCardTemplate } from '../lib/templateSerialization';
 import { todayISO, createTransaction } from '../lib/transactionHelpers';
 
@@ -60,7 +61,10 @@ const formatPhoneNumber = (value: string) => {
 
 export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaigns, setCustomers }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const { currentUser, currentOwner } = useAuth();
+
+  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
   
   // Dialog States
   const [isIssueOpen, setIsIssueOpen] = useState(false);
@@ -263,8 +267,12 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
     card.campaignName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const PAGE_SIZE = 8;
+  const totalPages = Math.ceil(filteredList.length / PAGE_SIZE);
+  const pagedData = useMemo(() => filteredList.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE), [filteredList, currentPage]);
+
   return (
-    <div className="p-8 space-y-6 animate-fade-in h-full flex flex-col">
+    <div className="p-4 md:p-8 space-y-6 animate-fade-in h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Issued Cards</h1>
@@ -291,8 +299,75 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
         />
       </div>
 
-      <div className="rounded-lg border bg-white flex-1 overflow-auto shadow-sm">
-        <Table>
+      <div className="flex-1 flex flex-col justify-between rounded-xl border bg-white shadow-sm overflow-hidden">
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3 p-3">
+          {filteredList.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
+              No issued cards found.
+            </div>
+          ) : (
+            pagedData.map(({ customer, card }) => (
+              <div key={card.id} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <AvatarInitials name={customer.name} />
+                    <div className="min-w-0">
+                      <div className="font-semibold text-foreground">{customer.name}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                        <Mail size={10} /> {customer.email}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 font-bold text-lg text-primary shrink-0">
+                    <Stamp size={14} className="text-primary/70" />
+                    {card.stamps}
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <CreditCard size={12} />
+                    <span>{card.campaignName}</span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => { const slug = currentOwner?.slug; if (!slug) return; window.open(buildPublicCardUrl(slug, card.uniqueId), '_blank'); }} className="cursor-pointer">
+                        <ExternalLink className="mr-2 h-4 w-4" /> Public View
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => { setActiveCustomer(customer); setActiveCard(card); setIsStampOpen(true); }} className="cursor-pointer font-medium text-green-600 focus:text-green-600">
+                        <Plus className="mr-2 h-4 w-4" /> Add Stamp
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleRemoveStamp(customer, card)} className="cursor-pointer text-orange-600 focus:text-orange-600" disabled={card.stamps === 0}>
+                        <Minus className="mr-2 h-4 w-4" /> Remove Stamp
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => { setActiveCustomer(customer); setActiveCard(card); setIsRedeemOpen(true); }} className="cursor-pointer font-medium text-purple-600 focus:text-purple-600">
+                        <Gift className="mr-2 h-4 w-4" /> Redeem Reward
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => { setActiveCustomer(customer); setEditFormData({ name: customer.name, email: customer.email, mobile: customer.mobile || '' }); setIsEditOpen(true); }} className="cursor-pointer">
+                        <Edit className="mr-2 h-4 w-4" /> Edit Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600 focus:text-red-600 cursor-pointer" onClick={() => handleDeleteCard(customer.id, card.id)}>
+                        <Trash className="mr-2 h-4 w-4" /> Revoke Card
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead>Cardholder</TableHead>
@@ -304,14 +379,14 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredList.length === 0 ? (
+            {                filteredList.length === 0 ? (
                 <TableRow>
                     <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                         No issued cards found.
                     </TableCell>
                 </TableRow>
             ) : (
-                filteredList.map(({ customer, card }) => (
+                pagedData.map(({ customer, card }) => (
                 <TableRow key={card.id} className="hover:bg-muted/50 transition-colors">
                     <TableCell>
                         <div className="flex items-center gap-2">
@@ -398,9 +473,15 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
             )}
           </TableBody>
         </Table>
+        </div>
+        </div>
+        <div className="border-t p-4 bg-gray-50/50">
+          <PaginationBar currentPage={currentPage} totalPages={totalPages} totalItems={filteredList.length} onPageChange={setCurrentPage} />
+        </div>
       </div>
 
       {/* Edit Customer Dialog */}
+
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -502,6 +583,6 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
             </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
   );
+  
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -11,6 +11,7 @@ import { Label } from "./ui/label";
 import { upsertCustomer } from '../lib/db/customers';
 import { useAuth } from './AuthProvider';
 import { Alert } from './ui/alert';
+import { PaginationBar } from './ui/pagination';
 import { CustomersSkeleton } from './skeletons/CustomersSkeleton';
 
 interface CustomerDirectoryProps {
@@ -22,8 +23,6 @@ interface CustomerDirectoryProps {
 }
 
 export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers, setCustomers, readOnly = false, refreshData, dataReady = false }) => {
-  if (!dataReady) return <CustomersSkeleton />;
-
   const { currentOwner } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -32,11 +31,20 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [refreshBusy, setRefreshBusy] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
 
   const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const PAGE_SIZE = 8;
+  const totalPages = Math.ceil(filteredCustomers.length / PAGE_SIZE);
+  const pagedData = useMemo(() => filteredCustomers.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE), [filteredCustomers, currentPage]);
+
+  if (!dataReady) return <CustomersSkeleton />;
 
   const handleSaveEdit = async () => {
     if (!editingCustomer || !currentOwner) return;
@@ -121,8 +129,53 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
         <Alert variant="error">{error}</Alert>
       )}
 
-      <div className="rounded-xl border bg-white flex-1 overflow-auto shadow-sm">
-        <Table>
+      <div className="flex-1 flex flex-col justify-between rounded-xl border bg-white shadow-sm overflow-hidden">
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3 p-3">
+          {filteredCustomers.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
+              No customers found.
+            </div>
+          ) : (
+            pagedData.map(customer => (
+              <div key={customer.id} className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <AvatarInitials name={customer.name} className="bg-blue-100 text-blue-700" />
+                    <div className="min-w-0">
+                      <div className="font-semibold text-foreground truncate">{customer.name}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                        <Mail size={10} /> {customer.email}
+                      </div>
+                      {customer.mobile && (
+                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <Phone size={10} /> {customer.mobile}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {customer.cards.length} cards
+                    </span>
+                    {!readOnly && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setEditingCustomer(customer); setFormData({ name: customer.name, email: customer.email, mobile: customer.mobile || '' }) }}
+                      >
+                        <Edit size={16} className="text-muted-foreground" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
               <TableHead>Name</TableHead>
@@ -135,7 +188,7 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
             {filteredCustomers.length === 0 ? (
               <TableRow><TableCell colSpan={4} className="text-center h-24">No customers found.</TableCell></TableRow>
             ) : (
-              filteredCustomers.map(customer => (
+              pagedData.map(customer => (
                 <TableRow key={customer.id} className="hover:bg-muted/30">
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -170,6 +223,10 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
             )}
           </TableBody>
         </Table>
+        </div>
+        <div className="border-t p-4 bg-gray-50/50">
+          <PaginationBar currentPage={currentPage} totalPages={totalPages} totalItems={filteredCustomers.length} onPageChange={setCurrentPage} />
+        </div>
       </div>
 
       <Dialog open={!readOnly && !!editingCustomer} onOpenChange={(o) => !o && !busy && setEditingCustomer(null)}>
