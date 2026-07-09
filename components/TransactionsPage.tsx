@@ -31,7 +31,16 @@ const escapeCsvValue = (value: string | number | undefined) => {
     return `"${normalized.replace(/"/g, '""')}"`;
 };
 
-export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, refreshData, dataReady = false }) => {
+import { useStore } from '../store/useStore';
+import { useAuth } from './AuthProvider';
+
+export const TransactionsPage: React.FC = () => {
+  const { customers, refreshData, dataReady } = useStore();
+  const { currentOwner } = useAuth();
+  
+  const handleRefresh = async () => {
+      if (currentOwner) await refreshData(currentOwner.id);
+  };
   const PAGE_SIZE = 8;
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -175,8 +184,8 @@ export const TransactionsPage: React.FC<TransactionsPageProps> = ({ customers, r
             </div>
 
              <div className="flex flex-wrap items-center gap-2 ml-auto">
-                 {refreshData && (
-                   <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="gap-2">
+                 {handleRefresh && (
+                   <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await handleRefresh(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="gap-2">
                      <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
                    </Button>
                  )}

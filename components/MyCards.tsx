@@ -21,6 +21,7 @@ import { useAuth } from './AuthProvider';
 import { isPremiumTier } from '../lib/utils';
 import { Alert } from './ui/alert';
 import { CampaignsSkeleton } from './skeletons/CampaignsSkeleton';
+import { useStore } from '../store/useStore';
 
 interface MyCardsProps {
   cards: Template[];
@@ -174,12 +175,9 @@ const ResponsiveCardItem: React.FC<ResponsiveCardItemProps> = ({
     )
 }
 
-export const MyCards: React.FC<MyCardsProps> = ({
-  cards,
-  onDeleteCard,
-  onToggleCampaignEnabled,
-  dataReady = false,
-}) => {
+
+export const MyCards: React.FC = () => {
+  const { campaigns: cards, deleteCampaign: onDeleteCard, toggleCampaignEnabled: onToggleCampaignEnabled, dataReady } = useStore();
   if (!dataReady) return <CampaignsSkeleton />;
   const { currentOwner } = useAuth();
   const isPremium = isPremiumTier(currentOwner?.tier);
@@ -211,7 +209,9 @@ export const MyCards: React.FC<MyCardsProps> = ({
     setDeleteError("");
     setToggleBusyId(id);
     try {
-      await onToggleCampaignEnabled(id, isEnabled);
+      if (currentOwner) {
+        await onToggleCampaignEnabled(id, currentOwner.id, isEnabled);
+      }
     } catch {
       setDeleteError("Unable to update this campaign status right now. Please try again.");
     } finally {

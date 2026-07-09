@@ -14,15 +14,14 @@ import { Alert } from './ui/alert';
 import { PaginationBar } from './ui/pagination';
 import { CustomersSkeleton } from './skeletons/CustomersSkeleton';
 
+import { useStore } from '../store/useStore';
+
 interface CustomerDirectoryProps {
-  customers: Customer[];
-  setCustomers: React.Dispatch<React.SetStateAction<Customer[]>>;
   readOnly?: boolean;
-  refreshData?: () => Promise<void>;
-  dataReady?: boolean;
 }
 
-export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers, setCustomers, readOnly = false, refreshData, dataReady = false }) => {
+export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ readOnly = false }) => {
+  const { customers, updateCustomerStateLocally: setCustomers, refreshData, dataReady } = useStore();
   const { currentOwner } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -56,10 +55,10 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
     );
     setBusy(false);
     if (result.ok) {
-      if (refreshData) {
-        void refreshData();
+      if (refreshData && currentOwner) {
+        void refreshData(currentOwner.id);
       } else {
-        setCustomers(prev => prev.map(c => c.id === editingCustomer.id ? { ...c, ...formData } : c));
+        setCustomers(customers.map(c => c.id === editingCustomer.id ? { ...c, ...formData } : c));
       }
       setEditingCustomer(null);
     } else {
@@ -78,8 +77,8 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
     );
     setBusy(false);
     if (result.ok) {
-      if (refreshData) {
-        void refreshData();
+      if (refreshData && currentOwner) {
+        void refreshData(currentOwner.id);
       } else {
         const newCustomer: Customer = {
           id: newId,
@@ -89,7 +88,7 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
           status: 'Active',
           cards: []
         };
-        setCustomers(prev => [...prev, newCustomer]);
+        setCustomers([...customers, newCustomer]);
       }
       setIsAddOpen(false);
       setFormData({ name: '', email: '', mobile: '' });
@@ -119,7 +118,7 @@ export const CustomerDirectory: React.FC<CustomerDirectoryProps> = ({ customers,
           placeholder="Search customers..."
         />
         {refreshData && (
-          <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy) { setRefreshBusy(true); try { await refreshData(); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="shrink-0">
+          <Button variant="outline" size="sm" onClick={async () => { if (!refreshBusy && currentOwner) { setRefreshBusy(true); try { await refreshData(currentOwner.id); } finally { setRefreshBusy(false); }}}} disabled={refreshBusy} className="shrink-0">
             <RefreshCw size={14} className={refreshBusy ? "animate-spin" : ""} />
           </Button>
         )}

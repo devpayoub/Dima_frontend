@@ -14,16 +14,14 @@ import { TemplatesGallery } from './components/TemplatesGallery';
 import { RequireRole } from './components/RequireRole';
 import { RequireTier } from './components/RequireTier';
 import { VerifyBanner } from './components/VerifyBanner';
-import { fetchCampaigns, upsertCampaign, deleteCampaign as dbDeleteCampaign, setCampaignEnabled } from './lib/db/campaigns';
-import { fetchCustomersWithCards } from './lib/db/customers';
 import { fetchPublicScanEntryContext } from './lib/db/issuedCards';
 import { buildIssuedCardsKioskUrl, buildStaffPortalUrl, buildStaffScanEntryUrl } from './lib/links';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
-import { fetchDashboard } from './lib/api/dashboard';
 import { useSubscription } from './lib/useSubscription';
 import { SubscriptionProvider } from './components/SubscriptionContext';
 import { APP_ORIGIN } from './lib/siteConfig';
 import * as apiPublic from './lib/api/public';
+import { useStore } from './store/useStore';
 
 const SITE_ORIGIN = APP_ORIGIN;
 const DEFAULT_SOCIAL_DESCRIPTION = 'Stampee is a digital loyalty card platform for small businesses, including loyalty program for cafes, loyalty program for spa, loyalty program for laundry, loyalty program for carwash, and loyalty program for salons.';
@@ -495,7 +493,8 @@ const EditorWrapper: React.FC<{ onSave: (t: Template) => Promise<void>; template
   );
 };
 
-const DashboardLayout: React.FC<{ pendingRequestCount: number; onPendingCountChange: (count: number) => void }> = ({ pendingRequestCount, onPendingCountChange }) => {
+const DashboardLayout: React.FC = () => {
+  const { pendingRequestCount, setPendingRequestCount: onPendingCountChange } = useStore();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const location = useLocation();
 
@@ -589,83 +588,15 @@ const DashboardLayout: React.FC<{ pendingRequestCount: number; onPendingCountCha
 
 const AppRoutes: React.FC = () => {
   const { currentOwner, isStaff } = useAuth();
-  const [createdCards, setCreatedCards] = useState<Template[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [dataReady, setDataReady] = useState(false);
-  const [pendingRequestCount, setPendingRequestCount] = useState(0);
+  const { campaigns, customers, loadData, saveCampaign } = useStore();
 
-  const sub = useSubscription(createdCards, customers);
-
-  const loadData = useCallback(async (ownerId: string, silent = false) => {
-    if (!silent) setDataReady(false);
-    try {
-      const data = await fetchDashboard();
-      setCreatedCards(data.campaigns.map(fromStoredTemplate));
-      setCustomers(data.customers);
-      setPendingRequestCount(data.pendingRequestCount);
-    } catch {
-      setCreatedCards([]);
-      setCustomers([]);
-      setPendingRequestCount(0);
-    }
-    setDataReady(true);
-  }, []);
+  const sub = useSubscription(campaigns, customers);
 
   useEffect(() => {
-    if (!currentOwner) {
-      setCreatedCards([]);
-      setCustomers([]);
-      setDataReady(true);
-      return;
-    }
-    void loadData(currentOwner.id);
-  }, [currentOwner?.id, loadData]);
-
-  const refreshData = useCallback(async () => {
     if (currentOwner) {
-      await loadData(currentOwner.id, true);
+      void loadData(currentOwner.id);
     }
-  }, [currentOwner, loadData]);
-
-  const handleSaveCard = async (template: Template) => {
-    if (!currentOwner) {
-      throw new Error('No active owner account found.');
-    }
-    const isNew = !createdCards.find(c => c.id === template.id);
-    const saved = isNew
-      ? { ...template, id: `custom-${Date.now()}`, isEnabled: template.isEnabled ?? true }
-      : { ...template, isEnabled: template.isEnabled ?? true };
-    const stored = toStoredTemplate(saved);
-    const result = await upsertCampaign(stored, currentOwner.id);
-    if (!result.ok) {
-      throw new Error(result.error ?? 'Failed to save the campaign.');
-    }
-
-    if (isNew) {
-      setCreatedCards(prev => [...prev, saved]);
-    } else {
-      setCreatedCards(prev => prev.map(c => c.id === saved.id ? saved : c));
-    }
-  };
-
-  const handleDeleteCard = async (cardId: string) => {
-    const result = await dbDeleteCampaign(cardId);
-    if (!result.ok) {
-      throw new Error(result.error ?? 'Failed to delete the campaign.');
-    }
-    setCreatedCards(prev => prev.filter(c => c.id !== cardId));
-  };
-
-  const handleToggleCampaignEnabled = async (cardId: string, isEnabled: boolean) => {
-    if (!currentOwner) {
-      throw new Error('No active owner account found.');
-    }
-    const result = await setCampaignEnabled(cardId, currentOwner.id, isEnabled);
-    if (!result.ok) {
-      throw new Error(result.error ?? 'Failed to update campaign status.');
-    }
-    setCreatedCards(prev => prev.map(card => (card.id === cardId ? { ...card, isEnabled } : card)));
-  };
+  }, [currentOwner?.id, loadData]);
 
   return (
     <SubscriptionProvider value={sub}>
@@ -689,33 +620,28 @@ const AppRoutes: React.FC = () => {
         {/* Authenticated Routes */}
         <Route element={<RequireAuth />}>
           <Route element={<RequireRole allowed={["owner"]} />}>
-            <Route path="/active/:cardId" element={<ActiveCardWrapper templates={createdCards} />} />
+            <Route path="/active/:cardId" element={<ActiveCardWrapper templates={campaigns} />} />
             <Route path="/preview/:templateId" element={<PreviewWrapper />} />
             <Route path="/editor/:id?" element={
               <RequireTier>
-                <EditorWrapper onSave={handleSaveCard} templates={createdCards} />
+                <EditorWrapper onSave={(t) => saveCampaign(t, currentOwner!.id)} templates={campaigns} />
               </RequireTier>
             } />
             <Route path="/gallery" element={withSuspense(<TemplatesGallery />)} />
           </Route>
 
-          <Route element={<DashboardLayout pendingRequestCount={pendingRequestCount} onPendingCountChange={setPendingRequestCount} />}>
+          <Route element={<DashboardLayout />}>
             <Route element={<RequireRole allowed={["owner"]} />}>
             <Route path="/dashboard" element={
-                withSuspense(<DashboardPage campaigns={createdCards} customers={customers} dataReady={dataReady} />)
+                withSuspense(<DashboardPage />)
               } />
               <Route path="/campaigns" element={
                 withSuspense(
-                  <MyCards
-                    cards={createdCards}
-                    onDeleteCard={handleDeleteCard}
-                    onToggleCampaignEnabled={handleToggleCampaignEnabled}
-                    dataReady={dataReady}
-                  />
+                  <MyCards />
                 )
               } />
-              <Route path="/analytics" element={withSuspense(<AnalyticsPage customers={customers} campaigns={createdCards} dataReady={dataReady} />)} />
-              <Route path="/transactions" element={withSuspense(<TransactionsPage customers={customers} refreshData={refreshData} dataReady={dataReady} />)} />
+              <Route path="/analytics" element={withSuspense(<AnalyticsPage />)} />
+              <Route path="/transactions" element={withSuspense(<TransactionsPage />)} />
               <Route path="/settings" element={withSuspense(<SettingsPage />)} />
               <Route path="/requests" element={withSuspense(<RequestsPage />)} />
             </Route>
@@ -723,24 +649,12 @@ const AppRoutes: React.FC = () => {
             <Route element={<RequireRole allowed={["owner", "staff"]} />}>
               <Route path="/issued-cards" element={
                 withSuspense(
-                  <IssuedCardsPage
-                    customers={customers}
-                    campaigns={createdCards}
-                    setCustomers={setCustomers}
-                    refreshData={refreshData}
-                    dataReady={dataReady}
-                  />
+                  <IssuedCardsPage />
                 )
               } />
               <Route path="/customers" element={
                 withSuspense(
-                  <CustomerDirectory
-                    customers={customers}
-                    setCustomers={setCustomers}
-                    readOnly={isStaff}
-                    refreshData={refreshData}
-                    dataReady={dataReady}
-                  />
+                  <CustomerDirectory readOnly={isStaff} />
                 )
               } />
             </Route>

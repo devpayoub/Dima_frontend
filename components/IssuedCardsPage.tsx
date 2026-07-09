@@ -61,7 +61,10 @@ const formatPhoneNumber = (value: string) => {
   return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
 };
 
-export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, campaigns, setCustomers, refreshData, dataReady }) => {
+import { useStore } from '../store/useStore';
+
+export const IssuedCardsPage: React.FC = () => {
+  const { campaigns, customers, updateCustomerStateLocally: setCustomers, refreshData, dataReady } = useStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const { currentUser, currentOwner } = useAuth();
@@ -146,17 +149,15 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
       const targetId = targetCustomer!.id;
       const customerToAdd = targetCustomer!;
 
-      setCustomers(prev => {
-          const exists = prev.find(c => c.id === targetId);
-          if (exists) {
-              return prev.map(c => c.id === targetId
-                  ? { ...c, cards: [...c.cards, newCard] }
-                  : c
-              );
-          } else {
-              return [...prev, { ...customerToAdd, cards: [newCard] }];
-          }
-      });
+      const exists = customers.find(c => c.id === targetId);
+      if (exists) {
+          setCustomers(customers.map(c => c.id === targetId
+              ? { ...c, cards: [...c.cards, newCard] }
+              : c
+          ));
+      } else {
+          setCustomers([...customers, { ...customerToAdd, cards: [newCard] }]);
+      }
       return newCard;
   };
 
@@ -242,7 +243,7 @@ export const IssuedCardsPage: React.FC<IssuedCardsPageProps> = ({ customers, cam
             stamps: card.stamps - 1,
             history: [newTransaction, ...card.history]
         };
-        setCustomers(prev => prev.map(c => c.id === customer.id ? { ...c, cards: c.cards.map(cc => cc.id === card.id ? updatedCard : cc) } : c));
+        setCustomers(customers.map(c => c.id === customer.id ? { ...c, cards: c.cards.map(cc => cc.id === card.id ? updatedCard : cc) } : c));
     }
   };
 

@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -478,7 +477,6 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
         <div className="border-t p-4 bg-gray-50/50">
           <PaginationBar currentPage={currentPage} totalPages={totalPages} totalItems={filteredList.length} onPageChange={setCurrentPage} />
         </div>
-      </div>
 
       {/* Edit Customer Dialog */}
 
@@ -583,6 +581,7 @@ export const CustomersPage: React.FC<CustomersPageProps> = ({ customers, campaig
             </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
   );
   
 };

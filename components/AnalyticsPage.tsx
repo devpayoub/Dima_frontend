@@ -84,7 +84,10 @@ const formatDateRangeLabel = (startDate: string, endDate: string) => {
   return `${startLabel} - ${endLabel}`;
 };
 
-export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ customers, campaigns, dataReady = false }) => {
+import { useStore } from '../store/useStore';
+
+export const AnalyticsPage: React.FC = () => {
+  const { campaigns, customers, dataReady } = useStore();
   if (!dataReady) return <AnalyticsSkeleton />;
 
   const [startDate, setStartDate] = useState(() => {

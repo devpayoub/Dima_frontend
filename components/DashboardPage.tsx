@@ -20,12 +20,7 @@ import { loadFromStorage, saveToStorage } from '../lib/storage';
 import { cn, isPremiumTier } from '../lib/utils';
 import { formatAction, formatTimestamp } from '../lib/format';
 import { DashboardSkeleton } from './skeletons/DashboardSkeleton';
-
-interface DashboardPageProps {
-  campaigns: Template[];
-  customers: Customer[];
-  dataReady?: boolean;
-}
+import { useStore } from '../store/useStore';
 
 interface ActivityItem extends Transaction {
   customerName: string;
@@ -49,7 +44,8 @@ const defaultDismissState: DashboardDismissState = {
   getStarted: false,
 };
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({ campaigns, customers, dataReady = false }) => {
+export const DashboardPage: React.FC = () => {
+  const { campaigns, customers, dataReady } = useStore();
   if (!dataReady) return <DashboardSkeleton />;
   const { currentOwner } = useAuth();
   const isPremium = isPremiumTier(currentOwner?.tier);
