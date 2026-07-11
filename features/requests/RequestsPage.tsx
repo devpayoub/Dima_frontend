@@ -46,7 +46,7 @@ export const RequestsPage: React.FC = () => {
       const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setRequests(sorted);
     } catch {
-      // silent â€” ignore errors on background refresh
+      // silent — ignore errors on background refresh
     } finally {
       loadingRef.current = false;
     }

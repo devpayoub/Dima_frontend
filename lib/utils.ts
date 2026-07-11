@@ -44,7 +44,7 @@ export function resolveHexAndOpacity(value?: string, defaultHex: string = '#0000
   return { hex, opacity: intensity ?? 100 };
 }
 
-const PREMIUM_TIERS = ['premium', 'business', 'enterprise'];
+const PREMIUM_TIERS = ['premium'];
 
 export function isPremiumTier(tier?: string): boolean {
   if (!tier) return false;

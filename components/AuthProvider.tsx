@@ -115,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       owner_id: role === "staff" ? ownerId : null,
       status: "unverified",
       access: "active",
-      tier: "free",
+      tier: "standard",
     };
 
     let { error } = await supabase.from("profiles").insert(payload);
@@ -334,11 +334,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!/^\d{4,6}$/.test(payload.pin)) {
       return { ok: false, error: "PIN should be 4-6 digits." };
     }
-    const staffLimit = TIER_LIMITS[currentOwner.tier].staff;
+    const staffLimit = (TIER_LIMITS[currentOwner.tier] ?? TIER_LIMITS.standard).staff;
     if (staffAccounts.length >= staffLimit) {
       return {
         ok: false,
-        error: `Free beta access allows only ${staffLimit} staff account${staffLimit === 1 ? "" : "s"}. Contact hello@stampee.co if you need higher limits.`,
+        error: `Current plan allows only ${staffLimit} staff account${staffLimit === 1 ? "" : "s"}. Contact hello@stampee.co if you need higher limits.`,
       };
     }
 

@@ -31,7 +31,7 @@ export const NAV_ITEMS = [
 
 const PlanBadge: React.FC = () => {
   const {
-    isProTier,
+    isPaid,
     campaignCount,
     campaignLimit,
     issuedCardCount,
@@ -40,17 +40,15 @@ const PlanBadge: React.FC = () => {
   const { currentOwner, isStaff } = useAuth();
   if (isStaff) return null;
 
-  const tier = currentOwner?.tier ?? 'free';
+  const tier = currentOwner?.tier ?? 'standard';
   const tierLabel: Record<string, string> = {
-    free: 'Free',
     standard: 'Standard',
     popular: 'Popular',
     premium: 'Premium',
-    pro: 'Pro',
   };
   const label = tierLabel[tier] ?? tier;
 
-  if (isProTier) {
+  if (isPaid) {
     return (
       <div className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-3 py-2 text-xs">
         <Crown size={14} className="text-amber-500" />

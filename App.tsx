@@ -7,7 +7,7 @@ import { templates } from './data/templates';
 import { BrowserRouter, Routes, Route, Outlet, useParams, useNavigate, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { toStoredTemplate, fromStoredTemplate } from './lib/templateSerialization';
-import { cn, hexToRgba, resolveHexAndOpacity, normalizeHexColor, mixHexColors, getHexLuminance } from './lib/utils';
+import { cn, hexToRgba, resolveHexAndOpacity, normalizeHexColor, mixHexColors, getHexLuminance, isPremiumTier } from './lib/utils';
 import { AuthProvider, useAuth } from './components/AuthProvider';
 import { RequireAuth } from './components/RequireAuth';
 import { TemplatesGallery } from './features/campaigns/TemplatesGallery';
@@ -445,7 +445,7 @@ const EditorWrapper: React.FC<{ onSave: (t: Template) => Promise<void>; template
 
   if (!initialTemplate) return <Navigate to="/campaigns" />;
 
-  const allowFullDesign = currentOwner?.tier === 'premium' || currentOwner?.tier === 'pro' || currentOwner?.tier === 'premier';
+  const allowFullDesign = isPremiumTier(currentOwner?.tier);
 
   return (
     withSuspense(

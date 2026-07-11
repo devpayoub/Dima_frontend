@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
+import { type VariantProps } from "class-variance-authority"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -26,7 +27,7 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
+} & { size?: NonNullable<VariantProps<typeof buttonVariants>['size']> } &
   React.ComponentProps<"a">
 
 function PaginationLink({ className, isActive, size = "icon", ...props }: PaginationLinkProps) {
@@ -34,7 +35,7 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
     <a
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        Button({ variant: isActive ? "outline" : "ghost", size }),
+        buttonVariants({ variant: isActive ? "outline" : "ghost", size }),
         "cursor-pointer h-9 w-9 text-xs",
         isActive && "pointer-events-none font-bold",
         className
@@ -48,7 +49,7 @@ function PaginationPrevious({ className, text = "Previous", ...props }: React.Co
   return (
     <a
       aria-label="Go to previous page"
-      className={cn(Button({ variant: "ghost", size: "default" }), "cursor-pointer gap-1 pl-2.5 h-9", className)}
+      className={cn(buttonVariants({ variant: "ghost", size: "default" }), "cursor-pointer gap-1 pl-2.5 h-9", className)}
       {...props}
     >
       <ChevronLeft className="h-4 w-4" />
@@ -61,7 +62,7 @@ function PaginationNext({ className, text = "Next", ...props }: React.ComponentP
   return (
     <a
       aria-label="Go to next page"
-      className={cn(Button({ variant: "ghost", size: "default" }), "cursor-pointer gap-1 pr-2.5 h-9", className)}
+      className={cn(buttonVariants({ variant: "ghost", size: "default" }), "cursor-pointer gap-1 pr-2.5 h-9", className)}
       {...props}
     >
       <span className="hidden sm:block text-xs">{text}</span>

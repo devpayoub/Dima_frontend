@@ -223,8 +223,7 @@ export const LoyaltyCard: React.FC<LoyaltyCardProps> = ({
     try {
       const data = await generateReward();
       setRewardData(data);
-    } catch (e) {
-      console.error(e);
+    } catch {
       setRewardData({ code: "ERROR", message: "Failed to generate reward." });
     } finally {
       setLoadingReward(false);

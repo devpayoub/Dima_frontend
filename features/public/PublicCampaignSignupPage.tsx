@@ -145,7 +145,7 @@ export const PublicCampaignSignupPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center px-4">
       {isShowingPreRedirectLoader && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 px-6 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 text-center shadow-[0_18px_52px_-36px_rgba(0,0,0,0.45)]">
@@ -159,9 +159,8 @@ export const PublicCampaignSignupPage: React.FC = () => {
           </div>
         </div>
       )}
-      <div className="mx-auto w-full max-w-xl">
-        <section className="rounded-[2rem] border border-black/[0.08] bg-white p-6 shadow-[0_24px_64px_-38px_rgba(0,0,0,0.35)] sm:p-8">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#6e6e73]">Loyalty Signup</p>
+      <section className="w-full max-w-lg rounded-[2rem] border border-black/[0.08] bg-white p-6 shadow-[0_24px_64px_-38px_rgba(0,0,0,0.35)] sm:p-8">
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-[#6e6e73]">Loyalty Signup</p>
           <h1 className="mt-3 text-[clamp(1.9rem,5vw,2.7rem)] font-black leading-[0.96] tracking-[-0.03em] text-[#1d1d1f]">
             {context.owner.businessName}
           </h1>
@@ -276,7 +275,6 @@ export const PublicCampaignSignupPage: React.FC = () => {
             </form>
           )}
         </section>
-      </div>
     </div>
   );
 };

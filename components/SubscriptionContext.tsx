@@ -3,7 +3,7 @@ import type { SubscriptionTier } from '../types';
 
 interface SubscriptionData {
   tier: SubscriptionTier;
-  isProTier: boolean;
+  isPaid: boolean;
   campaignCount: number;
   issuedCardCount: number;
   staffCount: number;
@@ -16,8 +16,8 @@ interface SubscriptionData {
 }
 
 const defaultData: SubscriptionData = {
-  tier: 'free',
-  isProTier: true,
+  tier: 'standard',
+  isPaid: true,
   campaignCount: 0,
   issuedCardCount: 0,
   staffCount: 0,

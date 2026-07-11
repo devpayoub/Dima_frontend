@@ -36,8 +36,7 @@ export function SimpleCampaignEditModal({ campaign, isOpen, onClose, onSave }: S
         totalStamps: parseInt(totalStamps, 10),
       });
       onClose();
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert('Failed to save campaign details.');
     } finally {
       setIsSaving(false);

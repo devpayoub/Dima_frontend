@@ -15,7 +15,7 @@ const COLORS = {
   olive: '#5c6b4a',
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NavBar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ——————————————————————————— NavBar ———————————————————————————— */
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const { currentUser } = useAuth();
@@ -89,14 +89,14 @@ const Navbar: React.FC = () => {
           onMouseEnter={e => (e.currentTarget.style.background = '#b56a3a')}
           onMouseLeave={e => (e.currentTarget.style.background = COLORS.terracotta)}
         >
-          {currentUser ? 'Dashboard' : 'Get Started â€” Free'}
+          {currentUser ? 'Dashboard' : 'Get Started — Free'}
         </Link>
       </div>
     </nav>
   );
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ——————————————————————————— Footer ——————————————————————————— */
 const Footer: React.FC = () => {
   return (
     <footer style={{ background: '#fff', borderTop: `1px solid ${COLORS.border}` }}>
@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
   );
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Contact Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ——————————————————————————— Contact Page ——————————————————————————— */
 const ContactPage: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 

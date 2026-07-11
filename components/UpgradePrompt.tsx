@@ -38,7 +38,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
   reason,
   currentUsage,
 }) => {
-  const limits = TIER_LIMITS.free;
+  const limits = TIER_LIMITS.standard;
   const subject = encodeURIComponent(buildSubject(reason));
   const mailtoHref = `mailto:${SALES_EMAIL}?subject=${subject}`;
 

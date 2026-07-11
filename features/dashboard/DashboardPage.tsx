@@ -46,12 +46,10 @@ const defaultDismissState: DashboardDismissState = {
 
 export const DashboardPage: React.FC = () => {
   const { campaigns, customers, dataReady } = useStore();
-  if (!dataReady) return <DashboardSkeleton />;
   const { currentOwner } = useAuth();
   const isPremium = isPremiumTier(currentOwner?.tier);
   const cards = useMemo(() => customers.flatMap((customer) => customer.cards), [customers]);
   const [dismissedSections, setDismissedSections] = useState<DashboardDismissState>(defaultDismissState);
-
   const recentActivity = useMemo<ActivityItem[]>(
     () =>
       customers
@@ -68,6 +66,20 @@ export const DashboardPage: React.FC = () => {
         .slice(0, 5),
     [customers]
   );
+
+  useEffect(() => {
+    if (!currentOwner?.id) {
+      setDismissedSections(defaultDismissState);
+      return;
+    }
+
+    const stored = loadFromStorage<DashboardDismissState>(dashboardDismissStateKey(currentOwner.id));
+    setDismissedSections({
+      getStarted: stored?.getStarted ?? false,
+    });
+  }, [currentOwner?.id]);
+
+  if (!dataReady) return <DashboardSkeleton />;
 
   const activeCardCount = cards.filter((card) => card.status === 'Active').length;
   const redeemedCardCount = cards.filter((card) => card.status === 'Redeemed').length;
@@ -131,18 +143,6 @@ export const DashboardPage: React.FC = () => {
       icon: Sparkles,
     },
   ];
-
-  useEffect(() => {
-    if (!currentOwner?.id) {
-      setDismissedSections(defaultDismissState);
-      return;
-    }
-
-    const stored = loadFromStorage<DashboardDismissState>(dashboardDismissStateKey(currentOwner.id));
-    setDismissedSections({
-      getStarted: stored?.getStarted ?? false,
-    });
-  }, [currentOwner?.id]);
 
   const dismissSection = (section: keyof DashboardDismissState) => {
     if (!setupComplete || !currentOwner?.id) return;

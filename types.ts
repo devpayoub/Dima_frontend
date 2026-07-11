@@ -95,14 +95,12 @@ export interface Customer {
 export type AccountStatus = 'unverified' | 'verified';
 export type UserRole = 'owner' | 'staff';
 export type AccessStatus = 'active' | 'disabled';
-export type SubscriptionTier = 'free' | 'pro' | 'standard' | 'popular' | 'premium';
+export type SubscriptionTier = 'standard' | 'popular' | 'premium';
 
 export const TIER_LIMITS = {
-  free: { campaigns: 1, issuedCards: 50, staff: 1 },
-  standard: { campaigns: 1, issuedCards: 300, staff: Infinity },
+  standard: { campaigns: 1, issuedCards: 300, staff: 3 },
   popular: { campaigns: 1, issuedCards: Infinity, staff: Infinity },
   premium: { campaigns: 3, issuedCards: Infinity, staff: Infinity },
-  pro: { campaigns: Infinity, issuedCards: Infinity, staff: Infinity },
 } as const;
 
 export interface User {

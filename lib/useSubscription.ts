@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { Customer, Template, SubscriptionTier } from '../types';
+import { Customer, Template, SubscriptionTier, TIER_LIMITS } from '../types';
 import { useAuth } from '../components/AuthProvider';
 
-interface SubscriptionInfo {
+export interface SubscriptionInfo {
   tier: SubscriptionTier;
-  isProTier: boolean;
+  isPaid: boolean;
   campaignCount: number;
   issuedCardCount: number;
   staffCount: number;
@@ -20,23 +20,24 @@ export function useSubscription(campaigns: Template[], customers: Customer[]): S
   const { currentOwner, staffAccounts } = useAuth();
 
   return useMemo(() => {
-    const tier: SubscriptionTier = currentOwner?.tier ?? 'free';
+    const tier: SubscriptionTier = currentOwner?.tier ?? 'standard';
+    const limits = TIER_LIMITS[tier] ?? TIER_LIMITS.standard;
     const campaignCount = campaigns.length;
     const issuedCardCount = customers.reduce((sum, c) => sum + c.cards.length, 0);
     const staffCount = staffAccounts.length;
 
     return {
       tier,
-      isProTier: true,
+      isPaid: true,
       campaignCount,
       issuedCardCount,
       staffCount,
-      campaignLimit: Infinity,
-      cardLimit: Infinity,
-      staffLimit: Infinity,
-      canCreateCampaign: true,
-      canIssueCard: true,
-      canCreateStaff: true,
+      campaignLimit: limits.campaigns,
+      cardLimit: limits.issuedCards,
+      staffLimit: limits.staff,
+      canCreateCampaign: campaignCount < limits.campaigns,
+      canIssueCard: issuedCardCount < limits.issuedCards,
+      canCreateStaff: staffCount < limits.staff,
     };
   }, [currentOwner?.tier, campaigns, customers, staffAccounts]);
 }

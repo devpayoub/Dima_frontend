@@ -178,7 +178,6 @@ const ResponsiveCardItem: React.FC<ResponsiveCardItemProps> = ({
 
 export const MyCards: React.FC = () => {
   const { campaigns: cards, deleteCampaign: onDeleteCard, toggleCampaignEnabled: onToggleCampaignEnabled, dataReady } = useStore();
-  if (!dataReady) return <CampaignsSkeleton />;
   const { currentOwner } = useAuth();
   const isPremium = isPremiumTier(currentOwner?.tier);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -189,6 +188,8 @@ export const MyCards: React.FC = () => {
   useSubscriptionContext();
   const qrUrl = qrCard && currentOwner?.slug ? buildCampaignSignupUrl(currentOwner.slug, qrCard.id) : "";
   const qrDisplayUrl = qrUrl.length > 42 ? `${qrUrl.slice(0, 42)}...` : qrUrl;
+
+  if (!dataReady) return <CampaignsSkeleton />;
 
   const confirmDelete = async () => {
     if (deleteId) {

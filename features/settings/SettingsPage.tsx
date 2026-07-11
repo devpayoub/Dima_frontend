@@ -239,7 +239,7 @@ export const SettingsPage: React.FC = () => {
                 type="password"
                 value={passwordForm.next}
                 onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 required
               />
             </div>
@@ -249,7 +249,7 @@ export const SettingsPage: React.FC = () => {
                 type="password"
                 value={passwordForm.confirm}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 required
               />
             </div>
@@ -341,7 +341,7 @@ export const SettingsPage: React.FC = () => {
 
         {staffActionError && <Alert variant="error">{staffActionError}</Alert>}
 
-        {/* Staff table â€” desktop */}
+        {/* Staff table — desktop */}
         <div className="hidden md:block rounded-2xl border border-slate-100 overflow-hidden">
           <div className="grid grid-cols-[1.2fr_1.4fr_0.8fr_auto] gap-4 px-4 py-3 text-xs uppercase tracking-wider text-muted-foreground bg-slate-50">
             <span>Name</span>
@@ -409,7 +409,7 @@ export const SettingsPage: React.FC = () => {
           )}
         </div>
 
-        {/* Staff list â€” mobile cards */}
+        {/* Staff list — mobile cards */}
         <div className="md:hidden space-y-3">
           {staffAccounts.length === 0 ? (
             <div className="rounded-2xl border border-slate-100 px-4 py-6 text-sm text-muted-foreground">

@@ -18,7 +18,7 @@ create table if not exists public.profiles (
   owner_id uuid references public.profiles(id) on delete cascade,
   status text not null default 'unverified' check (status in ('unverified', 'verified')),
   access text not null default 'active' check (access in ('active', 'disabled')),
-  tier text not null default 'standard' check (tier in ('free', 'pro', 'standard', 'popular', 'premium')),
+  tier text not null default 'standard' check (tier in ('standard', 'popular', 'premium')),
   tier_expires_at timestamptz,
   created_at timestamptz not null default now()
 );
@@ -1040,3 +1040,14 @@ CREATE INDEX IF NOT EXISTS idx_profiles_owner_id ON public.profiles(owner_id);
 CREATE INDEX IF NOT EXISTS idx_customers_owner_email ON public.customers(owner_id, email);
 CREATE INDEX IF NOT EXISTS idx_customers_owner_mobile ON public.customers(owner_id, mobile);
 CREATE INDEX IF NOT EXISTS idx_issued_cards_dedup ON public.issued_cards(owner_id, campaign_id, customer_id, status);
+
+-- Fix: stamp_requests FK was blocking issued_cards DELETE (ON DELETE NO ACTION)
+-- Changed to ON DELETE SET NULL so deleting a card nulls out the stamp_requests reference
+alter table public.stamp_requests
+  drop constraint if exists stamp_requests_accepted_card_id_fkey;
+
+alter table public.stamp_requests
+  add constraint stamp_requests_accepted_card_id_fkey
+  foreign key (accepted_card_id)
+  references public.issued_cards(id)
+  on delete set null;

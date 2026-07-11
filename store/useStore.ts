@@ -39,8 +39,7 @@ export const useStore = create<DashboardState>((set, get) => ({
         dataReady: true,
         isLoading: false,
       });
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+    } catch {
       set({ campaigns: [], customers: [], pendingRequestCount: 0, dataReady: true, isLoading: false });
     }
   },
