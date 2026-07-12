@@ -2,10 +2,10 @@ import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { BackgroundDoodles } from './BackgroundDoodles';
 import { StampSlot } from './StampSlot';
 import { RewardModal } from './RewardModal';
-import { QrCodeDisplay } from './ui/qr-code-display';
-import { generateReward } from '../services/rewardService';
-import { Template, Transaction } from '../types';
-import { cn, resolveHexAndOpacity, hexToRgba } from '../lib/utils';
+import { QrCodeDisplay } from '@/components/ui/qr-code-display';
+import { generateReward } from './rewardService';
+import { Template, Transaction } from '@/types';
+import { cn, resolveHexAndOpacity, hexToRgba } from '@/lib/utils';
 import { QrCode, History, Gift, Plus, X, Minus, CreditCard, Globe } from 'lucide-react';
 import { siFacebook, siInstagram, siTiktok, siX, siYoutube } from 'simple-icons/icons';
 
@@ -157,7 +157,7 @@ export const LoyaltyCard: React.FC<LoyaltyCardProps> = ({
     if (!(isCompleted && !isRedeemed)) return;
 
     let cancelled = false;
-    void import('../Gift Box Orange.json').then((module) => {
+    void import('../../../Gift Box Orange.json').then((module) => {
       if (!cancelled) {
         setGiftAnimation(module.default);
       }

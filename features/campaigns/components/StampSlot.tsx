@@ -1,7 +1,7 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { ThemeColors } from '../types';
-import { cn } from '../lib/utils';
+import { ThemeColors } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface StampSlotProps {
   active: boolean;

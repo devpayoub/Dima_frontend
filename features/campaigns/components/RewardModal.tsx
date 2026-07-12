@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { Loader2, PartyPopper, X } from 'lucide-react';
-import { ThemeColors } from '../types';
-import { resolveHexAndOpacity, hexToRgba } from '../lib/utils';
+import { ThemeColors } from '@/types';
+import { resolveHexAndOpacity, hexToRgba } from '@/lib/utils';
 
 const LottiePlayer = lazy(() => import('lottie-react'));
 
@@ -77,7 +77,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({ isOpen, onClose, loadi
     setSelectedMessage(COMPLETION_MESSAGES[nextIndex]);
 
     let cancelled = false;
-    void import('../Gift Box Orange.json')
+    void import('../../../Gift Box Orange.json')
       .then((module) => {
         if (!cancelled) {
           setGiftAnimation(module.default);

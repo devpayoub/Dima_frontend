@@ -1,4 +1,4 @@
-import * as apiPublic from '../lib/api/public';
+import * as apiPublic from '@/lib/api/public';
 
 export async function generateReward(): Promise<{ code: string; message: string }> {
   try {

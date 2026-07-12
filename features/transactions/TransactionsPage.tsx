@@ -9,7 +9,7 @@ import { Customer, Transaction } from '@/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { getTransactionMeta } from '@/lib/format';
-import { TransactionsSkeleton } from '@/components/skeletons/TransactionsSkeleton';
+import { TransactionsSkeleton } from '@/features/transactions/components/TransactionsSkeleton';
 import { PaginationBar } from '@/components/ui/pagination';
 
 interface TransactionsPageProps {

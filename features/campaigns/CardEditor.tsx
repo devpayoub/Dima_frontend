@@ -1,6 +1,6 @@
 ﻿import React, { useRef, useState } from 'react';
 import { Template } from '@/types';
-import { LoyaltyCard } from '@/components/LoyaltyCard';
+import { LoyaltyCard } from '@/features/campaigns/components/LoyaltyCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

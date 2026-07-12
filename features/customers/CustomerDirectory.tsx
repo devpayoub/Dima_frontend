@@ -12,7 +12,7 @@ import { upsertCustomer } from '@/lib/db/customers';
 import { useAuth } from '@/components/AuthProvider';
 import { Alert } from '@/components/ui/alert';
 import { PaginationBar } from '@/components/ui/pagination';
-import { CustomersSkeleton } from '@/components/skeletons/CustomersSkeleton';
+import { CustomersSkeleton } from '@/features/customers/components/CustomersSkeleton';
 
 import { useStore } from '@/store/useStore';
 

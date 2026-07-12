@@ -37,7 +37,7 @@ type SeoConfig = {
   type?: 'website' | 'article';
 };
 
-const LoyaltyCard = lazy(() => import('./components/LoyaltyCard').then((module) => ({ default: module.LoyaltyCard })));
+const LoyaltyCard = lazy(() => import('./features/campaigns/components/LoyaltyCard').then((module) => ({ default: module.LoyaltyCard })));
 const CardEditor = lazy(() => import('./features/campaigns/CardEditor').then((module) => ({ default: module.CardEditor })));
 const MyCards = lazy(() => import('./features/campaigns/MyCards').then((module) => ({ default: module.MyCards })));
 const IssuedCardsPage = lazy(() => import('./features/cards/IssuedCardsPage').then((module) => ({ default: module.IssuedCardsPage })));

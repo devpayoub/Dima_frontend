@@ -19,7 +19,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { loadFromStorage, saveToStorage } from '@/lib/storage';
 import { cn, isPremiumTier } from '@/lib/utils';
 import { formatAction, formatTimestamp } from '@/lib/format';
-import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton';
 import { useStore } from '@/store/useStore';
 
 interface ActivityItem extends Transaction {

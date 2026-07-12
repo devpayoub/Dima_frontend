@@ -31,4 +31,8 @@ Git history retains every file if a recovery is ever required.
   (The article-data chain had only one consumer: components/ArticlesPage.tsx,
   which is itself orphaned above. Hence the chain is dead.)
 
-Total: 15 files.
+## Additional orphans moved in phase 2 (2)
+- components/ScanQrDialog.tsx          (no external importer)
+- components/ui/ScaledCardPreview.tsx  (impure UI primitive — imports LoyaltyCard; no external importer)
+
+Total: 17 files.

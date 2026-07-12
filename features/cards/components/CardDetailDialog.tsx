@@ -1,11 +1,11 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, Gift, Mail, Phone, CreditCard, ExternalLink, Edit, Trash, CalendarDays } from "lucide-react";
-import { LoyaltyCard } from "@/components/LoyaltyCard";
-import { AvatarInitials } from "@/components/ui/avatar-initials";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Minus, Gift, Mail, Phone, CreditCard, ExternalLink, Edit, Trash, CalendarDays } from 'lucide-react';
+import { LoyaltyCard } from '@/features/campaigns/components/LoyaltyCard';
+import { AvatarInitials } from '@/components/ui/avatar-initials';
+import { cn } from '@/lib/utils';
 import { Customer, IssuedCard, Template } from '@/types';
 
 interface CardDetailDialogProps {

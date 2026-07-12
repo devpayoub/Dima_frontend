@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Customer, IssuedCard, Template, Transaction } from '../types';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { QrCodeDisplay } from "./ui/qr-code-display";
-import { CreditCard, ChevronRight, UserPlus, CheckCircle2, User, ArrowLeft, Copy, ExternalLink, Ban } from "lucide-react";
-import { SearchInput } from "./ui/search-input";
-import { AvatarInitials } from "./ui/avatar-initials";
-import { useAuth } from './AuthProvider';
-import { buildPublicCardUrl } from '../lib/links';
-import { Alert } from './ui/alert';
+import { Customer, IssuedCard, Template, Transaction } from '@/types';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { QrCodeDisplay } from '@/components/ui/qr-code-display';
+import { CreditCard, ChevronRight, UserPlus, CheckCircle2, User, ArrowLeft, Copy, ExternalLink, Ban } from 'lucide-react';
+import { SearchInput } from '@/components/ui/search-input';
+import { AvatarInitials } from '@/components/ui/avatar-initials';
+import { useAuth } from '@/components/AuthProvider';
+import { buildPublicCardUrl } from '@/lib/links';
+import { Alert } from '@/components/ui/alert';
 
 interface IssueCardDialogProps {
     isOpen: boolean;

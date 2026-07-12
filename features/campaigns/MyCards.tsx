@@ -2,7 +2,7 @@
 import { Template } from '@/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Edit2, Trash2, CreditCard, Play, QrCode, Power, Copy, ExternalLink } from 'lucide-react';
-import { LoyaltyCard } from '@/components/LoyaltyCard';
+import { LoyaltyCard } from '@/features/campaigns/components/LoyaltyCard';
 import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { buildCampaignSignupUrl } from '@/lib/links';
 import { useAuth } from '@/components/AuthProvider';
 import { isPremiumTier } from '@/lib/utils';
 import { Alert } from '@/components/ui/alert';
-import { CampaignsSkeleton } from '@/components/skeletons/CampaignsSkeleton';
+import { CampaignsSkeleton } from '@/features/campaigns/components/CampaignsSkeleton';
 import { useStore } from '@/store/useStore';
 
 interface MyCardsProps {

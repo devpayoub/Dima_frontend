@@ -15,7 +15,7 @@ import {
   Users,
   TrendingUp
 } from "lucide-react";
-import { AnalyticsSkeleton } from "@/components/skeletons/AnalyticsSkeleton";
+import { AnalyticsSkeleton } from "@/features/analytics/components/AnalyticsSkeleton";
 
 interface AnalyticsPageProps {
   customers: Customer[];

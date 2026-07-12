@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Template } from '@/types';
 import { templates } from '@/data/templates';
-import { LoyaltyCard } from '@/components/LoyaltyCard';
+import { LoyaltyCard } from '@/features/campaigns/components/LoyaltyCard';
 import { LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
