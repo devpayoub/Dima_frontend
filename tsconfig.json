@@ -26,5 +26,6 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["_trash", "dist", "node_modules"]
 }
