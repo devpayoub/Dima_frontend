@@ -1,8 +1,8 @@
 import React from 'react';
 import { Trash } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
-import { Button } from '../ui/button';
-import type { Customer, IssuedCard } from '../../types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import type { Customer, IssuedCard } from '@/types';
 
 interface DeleteCardDialogProps {
   open: boolean;

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
 import { formatPhoneNumber } from '../lib/format';
 import type { Customer, IssuedCard } from '../types';
-import type { EditFormData } from '../components/dialogs/EditCustomerDialog';
+import type { EditFormData } from '@/features/cards/components/EditCustomerDialog';
 
 export function useCustomerDialogs() {
   const [isIssueOpen, setIsIssueOpen] = useState(false);

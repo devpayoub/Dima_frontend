@@ -1,8 +1,8 @@
 import React from 'react';
 import { Gift } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
-import { Button } from '../ui/button';
-import type { IssuedCard } from '../../types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import type { IssuedCard } from '@/types';
 
 interface RedeemRewardDialogProps {
   open: boolean;

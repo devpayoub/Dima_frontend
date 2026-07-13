@@ -34,9 +34,9 @@ import { PaginationBar } from './ui/pagination';
 import { resolveCardTemplate } from '../lib/templateSerialization';
 import { todayISO, createTransaction } from '../lib/transactionHelpers';
 import { formatPhoneNumber } from '../lib/format';
-import { AddStampDialog } from './dialogs/AddStampDialog';
-import { RedeemRewardDialog } from './dialogs/RedeemRewardDialog';
-import { EditCustomerDialog } from './dialogs/EditCustomerDialog';
+import { AddStampDialog } from '@/features/cards/components/AddStampDialog';
+import { RedeemRewardDialog } from '@/features/cards/components/RedeemRewardDialog';
+import { EditCustomerDialog } from '@/features/cards/components/EditCustomerDialog';
 import { useCardActions } from '../hooks/useCardActions';
 import { useCustomerDialogs } from '../hooks/useCustomerDialogs';
 

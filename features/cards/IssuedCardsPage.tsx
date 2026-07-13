@@ -37,10 +37,10 @@ import * as apiCustomers from '@/lib/api/customers';
 import { useStore } from '@/store/useStore';
 import { useCardActions } from '@/hooks/useCardActions';
 import { useCustomerDialogs } from '@/hooks/useCustomerDialogs';
-import { AddStampDialog } from '@/components/dialogs/AddStampDialog';
-import { RedeemRewardDialog } from '@/components/dialogs/RedeemRewardDialog';
-import { EditCustomerDialog } from '@/components/dialogs/EditCustomerDialog';
-import { DeleteCardDialog } from '@/components/dialogs/DeleteCardDialog';
+import { AddStampDialog } from '@/features/cards/components/AddStampDialog';
+import { RedeemRewardDialog } from '@/features/cards/components/RedeemRewardDialog';
+import { EditCustomerDialog } from '@/features/cards/components/EditCustomerDialog';
+import { DeleteCardDialog } from '@/features/cards/components/DeleteCardDialog';
 
 export const IssuedCardsPage: React.FC = () => {
   const { campaigns, customers, updateCustomerStateLocally: setCustomers } = useStore();
