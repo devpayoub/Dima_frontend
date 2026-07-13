@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MonitorPlay } from "lucide-react";
 import { PublicFooter } from "./PublicFooter";
 import { Button } from "./ui/button";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 const showcaseCardPaths = [
   "/the-daily-brew/888f22a4-247d-4b3d-a5fa-8d32d7474d6d",

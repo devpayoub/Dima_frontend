@@ -1,8 +1,8 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Lock, Smartphone, Palette, BarChart3, QrCode, Sparkles, ArrowRight, Check, Zap, Users } from 'lucide-react';
 import { hexToRgba } from '@/lib/utils';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 /* ---------------------------- injected styles ---------------------------- */
 if (!document.getElementById('landing-styles')) {

@@ -1,8 +1,8 @@
 import React from "react";
 import { MailOpen, RefreshCcw } from "lucide-react";
-import { useAuth } from "./AuthProvider";
-import { Button } from "./ui/button";
-import { trackEvent } from "../lib/analytics";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 export const VerifyBanner: React.FC = () => {
   const { currentOwner, isEmailVerified, resendVerificationEmail, refreshProfile } = useAuth();

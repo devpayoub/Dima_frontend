@@ -1,10 +1,10 @@
 import React from 'react';
 import { LayoutDashboard, Users, CreditCard, Settings, LogOut, Wallet, History, QrCode, Crown, Sparkles, Bell } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthProvider';
-import { useSubscriptionContext } from './SubscriptionContext';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { useSubscriptionContext } from '@/app/providers/SubscriptionContext';
 
 interface SidebarProps {
   className?: string;

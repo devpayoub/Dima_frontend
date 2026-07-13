@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Template } from '@/types';
 import { LoyaltyCard } from '@/features/campaigns/components/LoyaltyCard';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ArrowLeft, Check as CheckIcon, Smartphone, Image as ImageIcon, Type, Palette, Grid, X, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ICON_OPTIONS } from '@/lib/iconRegistry';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { deleteCampaignAssetByUrl, type CampaignAssetKind, uploadCampaignAsset } from '@/lib/storage/campaignAssets';
 import { Alert } from '@/components/ui/alert';
 

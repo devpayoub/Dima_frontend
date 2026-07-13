@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { fetchPublicScanEntryContext } from '@/lib/db/issuedCards';
 import { buildIssuedCardsKioskUrl, buildStaffPortalUrl } from '@/lib/links';
 

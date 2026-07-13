@@ -1,7 +1,7 @@
-﻿import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { getStampRequests, acceptStampRequest, declineStampRequest, StampRequest } from '@/lib/api/stampRequests';
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +46,7 @@ export const RequestsPage: React.FC = () => {
       const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setRequests(sorted);
     } catch {
-      // silent — ignore errors on background refresh
+      // silent � ignore errors on background refresh
     } finally {
       loadingRef.current = false;
     }

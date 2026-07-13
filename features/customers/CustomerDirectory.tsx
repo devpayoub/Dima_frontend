@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Customer } from '@/types';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { upsertCustomer } from '@/lib/db/customers';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { Alert } from '@/components/ui/alert';
 import { PaginationBar } from '@/components/ui/pagination';
 import { CustomersSkeleton } from '@/features/customers/components/CustomersSkeleton';

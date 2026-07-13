@@ -1,11 +1,11 @@
 import React, { lazy, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '@/components/AuthProvider';
-import { RequireAuth } from '@/components/RequireAuth';
-import { RequireRole } from '@/components/RequireRole';
-import { RequireTier } from '@/components/RequireTier';
-import { SubscriptionProvider } from '@/components/SubscriptionContext';
-import { useSubscription } from '@/lib/useSubscription';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { RequireAuth } from '@/app/providers/RequireAuth';
+import { RequireRole } from '@/app/providers/RequireRole';
+import { RequireTier } from '@/app/providers/RequireTier';
+import { SubscriptionProvider } from '@/app/providers/SubscriptionContext';
+import { useSubscription } from '@/app/providers/useSubscription';
 import { useStore } from '@/store/useStore';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { withSuspense } from '@/app/withSuspense';

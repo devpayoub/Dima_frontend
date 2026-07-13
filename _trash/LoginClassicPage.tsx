@@ -5,7 +5,7 @@ import { AuthLayout } from "./AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert } from "@/components/ui/alert";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { trackEvent } from "@/lib/analytics";
 import { DEMO_WORKSPACE_ENABLED } from "@/lib/siteConfig";
 

@@ -28,7 +28,7 @@ import { AvatarInitials } from "./ui/avatar-initials";
 import { cn } from "../lib/utils";
 import { Customer, Template, IssuedCard, Transaction } from '../types';
 import { IssueCardDialog } from './IssueCardDialog';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { buildPublicCardUrl } from '../lib/links';
 import { PaginationBar } from './ui/pagination';
 import { resolveCardTemplate } from '../lib/templateSerialization';

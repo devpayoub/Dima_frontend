@@ -5,8 +5,8 @@ import { AuthSplitLayout } from "./AuthSplitLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert } from "@/components/ui/alert";
-import { useAuth } from "@/components/AuthProvider";
-import type { AuthResult } from "@/components/AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
+import type { AuthResult } from "@/app/providers/AuthProvider";
 import { trackEvent } from "@/lib/analytics";
 import { DEMO_WORKSPACE_ENABLED } from "@/lib/siteConfig";
 

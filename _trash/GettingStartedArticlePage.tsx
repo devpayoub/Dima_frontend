@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
 import { PublicFooter } from "./PublicFooter";
 
 const steps = [

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -26,7 +26,7 @@ import { AvatarInitials } from "@/components/ui/avatar-initials";
 import { Customer, Template, IssuedCard } from '@/types';
 import { IssueCardDialog } from '@/features/cards/components/IssueCardDialog';
 import { CardDetailDialog } from '@/features/cards/components/CardDetailDialog';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { buildPublicCardUrl } from '@/lib/links';
 import { PaginationBar } from '@/components/ui/pagination';
 import { resolveCardTemplate } from '@/lib/templateSerialization';

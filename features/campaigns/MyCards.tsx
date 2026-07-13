@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Template } from '@/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Edit2, Trash2, CreditCard, Play, QrCode, Power, Copy, ExternalLink } from 'lucide-react';
@@ -15,9 +15,9 @@ import {
 import { QrCodeDisplay } from '@/components/ui/qr-code-display';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useSubscriptionContext } from '@/components/SubscriptionContext';
+import { useSubscriptionContext } from '@/app/providers/SubscriptionContext';
 import { buildCampaignSignupUrl } from '@/lib/links';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { isPremiumTier } from '@/lib/utils';
 import { Alert } from '@/components/ui/alert';
 import { CampaignsSkeleton } from '@/features/campaigns/components/CampaignsSkeleton';

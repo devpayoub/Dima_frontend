@@ -1,12 +1,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { TIER_LIMITS, User } from "../types";
-import { isSupabaseConfigured, supabase } from "../lib/supabase";
-import { fetchProfile, fetchProfileDetailed, fetchStaffAccounts, updateProfile as dbUpdateProfile } from "../lib/db/profiles";
-import { normalizeSlug } from "../lib/slug";
-import { buildAppUrl, DEMO_WORKSPACE_ENABLED } from "../lib/siteConfig";
-import * as apiAuth from "../lib/api/auth";
-import * as apiStaff from "../lib/api/staff";
-import * as apiProfile from "../lib/api/profile";
+import { TIER_LIMITS, User } from "@/types";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { fetchProfile, fetchProfileDetailed, fetchStaffAccounts, updateProfile as dbUpdateProfile } from "@/lib/db/profiles";
+import { normalizeSlug } from "@/lib/slug";
+import { buildAppUrl, DEMO_WORKSPACE_ENABLED } from "@/lib/siteConfig";
+import * as apiAuth from "@/lib/api/auth";
+import * as apiStaff from "@/lib/api/staff";
+import * as apiProfile from "@/lib/api/profile";
 
 type AuthUserLike = {
   id: string;

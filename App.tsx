@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '@/components/AuthProvider';
+import { AuthProvider } from '@/app/providers/AuthProvider';
 import SeoManager from '@/app/SeoManager';
 import AppRoutes from '@/app/AppRoutes';
 

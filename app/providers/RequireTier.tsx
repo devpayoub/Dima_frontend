@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { isPremiumTier } from "../lib/utils";
+import { isPremiumTier } from "@/lib/utils";
 
 interface RequireTierProps {
   children?: React.ReactNode;

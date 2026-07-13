@@ -8,7 +8,7 @@ import { QrCodeDisplay } from '@/components/ui/qr-code-display';
 import { CreditCard, ChevronRight, UserPlus, CheckCircle2, User, ArrowLeft, Copy, ExternalLink, Ban } from 'lucide-react';
 import { SearchInput } from '@/components/ui/search-input';
 import { AvatarInitials } from '@/components/ui/avatar-initials';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { buildPublicCardUrl } from '@/lib/links';
 import { Alert } from '@/components/ui/alert';
 

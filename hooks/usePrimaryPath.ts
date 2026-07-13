@@ -1,4 +1,4 @@
-import { useAuth } from '../components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 export function usePrimaryPath() {
   const { currentUser } = useAuth();

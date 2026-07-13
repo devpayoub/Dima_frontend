@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { Customer, Template, SubscriptionTier, TIER_LIMITS } from '../types';
-import { useAuth } from '../components/AuthProvider';
+import { Customer, Template, SubscriptionTier, TIER_LIMITS } from '@/types';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;

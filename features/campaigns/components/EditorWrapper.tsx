@@ -3,7 +3,7 @@ import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { Template } from '@/types';
 import { templates } from '@/data/templates';
 import { isPremiumTier } from '@/lib/utils';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { withSuspense } from '@/app/withSuspense';
 import { CardEditor } from '@/features/campaigns/CardEditor';
 

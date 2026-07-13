@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { NAV_ITEMS, Sidebar, SidebarContent } from '@/components/Sidebar';
-import { VerifyBanner } from '@/components/VerifyBanner';
+import { NAV_ITEMS, Sidebar, SidebarContent } from '@/app/layout/Sidebar';
+import { VerifyBanner } from '@/app/layout/VerifyBanner';
 import { supabase } from '@/lib/supabase';
 import { useStore } from '@/store/useStore';
 import { getStampRequests } from '@/lib/api/stampRequests';

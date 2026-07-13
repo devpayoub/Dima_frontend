@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
     Calendar, History,
@@ -32,7 +32,7 @@ const escapeCsvValue = (value: string | number | undefined) => {
 };
 
 import { useStore } from '@/store/useStore';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 export const TransactionsPage: React.FC = () => {
   const { customers, refreshData, dataReady } = useStore();

@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import type { SubscriptionTier } from '../types';
+import type { SubscriptionTier } from '@/types';
 
 interface SubscriptionData {
   tier: SubscriptionTier;
